@@ -2,8 +2,19 @@ library(shiny)
 library(tidyverse)
 library(leaflet)
 library(legislatoR)
+library(lubridate)
 
 party_logo_path <- here::here("test_leaflet_shiny/party_logos")
+
+# input list party
+party_list <- get_political("deu") %>% 
+  distinct(party) %>% 
+  pull
+
+# input list session
+session_list <- get_political("deu") %>% 
+  distinct(session) %>% 
+  pull
 
 dominant_party_de <- get_political("deu") %>% 
   group_by(pageid, party) %>% 
@@ -65,12 +76,19 @@ mp_list <- core_de %>%
   pull
 
 ui <- fluidPage(
+  selectInput("session_input", "Select Legislative Sessions", session_list, multiple = TRUE),
+  selectInput("party_input", "Select Parties", party_list, multiple = TRUE),
+  br(),
+  selectInput("name_input", "MP Name", mp_list, selected = NULL),
   leafletOutput("mymap"),
   p(),
-  selectInput("name_input", "MP Name", mp_list, selected = NULL)
+  plotOutput("age_plot_final"),
+  verbatimTextOutput("test_df")
+  # plotOutput("plot_session_n")
 )
 
 server <- function(input, output, session) {
+  
   
  coord_mp <- reactive(
    core_de %>% 
@@ -96,6 +114,67 @@ server <- function(input, output, session) {
               TRUE ~ "No image available."
             )
      )
+ )
+ 
+ age_df <- reactive(
+   get_political("deu") %>% 
+     left_join(get_core("deu")) %>% 
+     filter(
+       party %in% input$party_input,
+       session %in% input$session_input
+     ) %>% 
+     mutate(
+       age_at_death = if_else(
+         # Just compute age at death when death is higher than birth (logical check)
+         death > birth,
+         # Use lubridate for the difference and round the result
+         time_length(difftime(death, birth), "years") %>% round(3),
+         # If the birth date is larger (more recent) than the death date, an error in the data can be assumed
+         NA_real_
+       )
+     )
+ )
+ 
+ age_mp <- reactive(
+   age_df() %>% 
+     filter(name %in% input$name_input) %>% 
+     pull(age_at_death)
+ )
+ 
+ age_plot <- reactive({
+   
+   if (is.null(input$name_input)) {
+     
+     age_df() %>%
+       ggplot(aes(x = age_at_death)) +
+       geom_density() 
+     
+   } else {
+     
+
+      age_df() %>%
+         ggplot(aes(x = age_at_death)) +
+         geom_density() +
+         geom_vline(xintercept = age_mp())
+
+     
+   }
+   
+ })
+   
+ 
+ 
+ 
+
+
+ 
+ output$age_plot_final <- renderPlot(
+   age_plot()
+ )
+ 
+ # debug
+ output$test_df <- renderPrint(
+   age_df()
  )
  
  icons <- awesomeIcons(
