@@ -102,9 +102,9 @@ server <- function(input, output, session) {
     leaflet(coord_mp(),
             options = leafletOptions(zoomControl = FALSE,
                                      minZoom = 6, maxZoom = 6)) %>% 
-      # setView(-96, 37.8, 4) %>%
       addTiles() %>% 
-      addMarkers(lat = ~lat, lng = ~long, popup = ~ popup_image)
+      addMarkers(lat = ~lat, lng = ~long, popup = ~ popup_image) %>% 
+      addProviderTiles(providers$Stamen.Toner)
   })
 }
 
