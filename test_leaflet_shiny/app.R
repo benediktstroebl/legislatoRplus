@@ -77,11 +77,23 @@ server <- function(input, output, session) {
      filter(name == input$name_input) %>% 
      separate(birthplace, into = c("lat", "long"), sep = ",") %>% 
      mutate(across(c("lat", "long"), ~ as.numeric(.x)),
-            popup_image = ifelse( # add case_when options with na if both urls not available
-              !is.na(image_url),
-              paste0("<img src = ", image_url, " width='100'>"),
-              paste0("<img src = ", party_logo_url, " width='100'>")
-              # "No image available."
+            popup_image = case_when( 
+              !is.na(image_url) & !is.na(party_logo_url) ~ paste0(
+                "<img src = ", 
+                image_url, 
+                " width='100'>",
+                " </br>",
+                " </br>",
+                " <img src = ", 
+                party_logo_url, 
+                " width='100'>"
+                ),
+              !is.na(image_url) ~ paste0(
+                "<img src = ", 
+                party_logo_url, 
+                " width='100'>"
+              ),
+              TRUE ~ "No image available."
             )
      )
  )
