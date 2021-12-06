@@ -81,17 +81,17 @@ server <- function(input, output, session) {
               !is.na(image_url) & !is.na(party_logo_url) ~ paste0(
                 "<img src = ", 
                 image_url, 
-                " width='100'>",
+                " width='50'>",
                 " </br>",
                 " </br>",
                 " <img src = ", 
                 party_logo_url, 
-                " width='100'>"
+                " width='50'>"
                 ),
               !is.na(image_url) ~ paste0(
                 "<img src = ", 
                 party_logo_url, 
-                " width='100'>"
+                " width='50'>"
               ),
               TRUE ~ "No image available."
             )
