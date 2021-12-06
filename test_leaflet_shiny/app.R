@@ -11,7 +11,7 @@ dominant_party_de <- get_political("deu") %>%
   group_by(pageid) %>% 
   filter(n == max(n)) %>% 
   left_join(
-    pol_de %>% 
+    get_political("deu") %>% 
       group_by(pageid) %>% 
       filter(session_start == min(session_start)) %>% 
       arrange(session_start) %>% 
