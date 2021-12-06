@@ -97,13 +97,20 @@ server <- function(input, output, session) {
             )
      )
  )
+ 
+ icons <- awesomeIcons(
+   icon = "user",
+   markerColor = "lightgray",
+   iconColor = "white",
+   library = "fa"
+ )
   
   output$mymap <- renderLeaflet({
     leaflet(coord_mp(),
             options = leafletOptions(zoomControl = FALSE,
                                      minZoom = 6, maxZoom = 6)) %>% 
-      addTiles() %>% 
-      addMarkers(lat = ~lat, lng = ~long, popup = ~ popup_image) %>% 
+      # addTiles() %>% 
+      addAwesomeMarkers(lat = ~lat, lng = ~long, popup = ~popup_image, icon = icons) %>% 
       addProviderTiles(providers$Stamen.Toner)
   })
 }
