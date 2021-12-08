@@ -151,27 +151,39 @@ server <- function(input, output, session) {
   output$name_list_reactive_output <- renderPrint(name_list_reactive())
   
   # update MP name input according to session and party selection
-  ## trigger: 'session_input'
-  observeEvent(input$session_input, {
-
-    # MP name input
-    updateSelectInput(session,
-                      "name_input",
-                      choices = name_list_reactive(),
-                      selected = name_list_reactive()[1])
-
-  })
-  
-  # update MP name input according to session and party selection
-  ## trigger: 'party_input'
-  observeEvent(input$party_input, {
-
-    # MP name input
-    updateSelectInput(session,
-                      "name_input",
-                      choices = name_list_reactive(),
-                      selected = name_list_reactive()[1])
-
+  observe({
+    
+    ## trigger: 'session_input'
+    if (!is.null(input$session_input) & is.null(input$party_input)) {
+      
+      updateSelectInput(session,
+                        "name_input",
+                        choices = name_list_reactive(),
+                        selected = name_list_reactive()[1])
+    
+    ## trigger: 'party_input'  
+    } else if (is.null(input$session_input) & !is.null(input$party_input)) {
+      
+      updateSelectInput(session,
+                        "name_input",
+                        choices = name_list_reactive(),
+                        selected = name_list_reactive()[1])
+      
+    ## trigger: both  
+    } else if (!is.null(input$session_input) & !is.null(input$party_input)) {
+      
+      updateSelectInput(session,
+                        "name_input",
+                        choices = name_list_reactive(),
+                        selected = name_list_reactive()[1])
+      
+    ## trigger: none
+    } else {
+      
+      mp_list
+      
+    }
+    
   })
 
   coord_mp <- reactive(
