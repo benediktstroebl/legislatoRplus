@@ -1,57 +1,64 @@
 # Import shapefiles for Wahlkreise per session
 # btw21
-btw21_wahlkreise_spdf <- readOGR(dsn = "data/btw21/shapefiles/Geometrie_Wahlkreise_20DBT_geo.shp",
-                           encoding = "UTF-8",
-                           use_iconv = TRUE)
-# Transform spatial polygons data frame to longlat data
-btw21_wahlkreise_ll <- spTransform(btw21_wahlkreise_spdf, CRS("+init=epsg:4326"))
+btw21_wahlkreise_spdf <-
+  readOGR(dsn = "data/btw21/shapefiles/Geometrie_Wahlkreise_20DBT_geo.shp",
+          encoding = "UTF-8",
+          use_iconv = TRUE) %>%
+  # Transform spatial polygons data frame to longlat data
+  spTransform(CRS("+init=epsg:4326"))
 
 
 # btw17
-btw17_wahlkreise_spdf <- readOGR(dsn = "data/btw17/shapefiles/Geometrie_Wahlkreise_19DBT_geo.shp",
-                           encoding = "UTF-8",
-                           use_iconv = TRUE)
-# Transform spatial polygons data frame to longlat data
-btw17_wahlkreise_ll <- spTransform(btw17_wahlkreise_spdf, CRS("+init=epsg:4326"))
+btw17_wahlkreise_spdf <-
+  readOGR(dsn = "data/btw17/shapefiles/Geometrie_Wahlkreise_19DBT_geo.shp",
+          encoding = "UTF-8",
+          use_iconv = TRUE) %>%
+  # Transform spatial polygons data frame to longlat data
+  spTransform(CRS("+init=epsg:4326"))
 
 
 # btw13
-btw13_wahlkreise_spdf <- readOGR(dsn = "data/btw13/shapefiles/Geometrie_Wahlkreise_18DBT.shp",
-                           encoding = "UTF-8",
-                           use_iconv = TRUE)
-# Transform spatial polygons data frame to longlat data
-btw13_wahlkreise_ll <- spTransform(btw13_wahlkreise_spdf, CRS("+init=epsg:4326"))
+btw13_wahlkreise_spdf <-
+  readOGR(dsn = "data/btw13/shapefiles/Geometrie_Wahlkreise_18DBT.shp",
+          encoding = "UTF-8",
+          use_iconv = TRUE) %>%
+  # Transform spatial polygons data frame to longlat data
+  spTransform(CRS("+init=epsg:4326"))
 
 
 # btw09
-btw09_wahlkreise_spdf <- readOGR(dsn = "data/btw09/shapefiles/Geometrie_Wahlkreise_17DBT.shp",
-                           encoding = "UTF-8",
-                           use_iconv = TRUE)
-# Transform spatial polygons data frame to longlat data
-btw09_wahlkreise_ll <- spTransform(btw09_wahlkreise_spdf, CRS("+init=epsg:4326"))
+btw09_wahlkreise_spdf <-
+  readOGR(dsn = "data/btw09/shapefiles/Geometrie_Wahlkreise_17DBT.shp",
+          encoding = "UTF-8",
+          use_iconv = TRUE) %>%
+  # Transform spatial polygons data frame to longlat data
+  spTransform(CRS("+init=epsg:4326"))
 
 
 # btw05
-btw05_wahlkreise_spdf <- readOGR(dsn = "data/btw05/shapefiles/Geometrie_Wahlkreise_16DBT_geo.shp",
-                           encoding = "UTF-8",
-                           use_iconv = TRUE)
-# Transform spatial polygons data frame to longlat data
-btw05_wahlkreise_ll <- spTransform(btw05_wahlkreise_spdf, CRS("+init=epsg:4326"))
+btw05_wahlkreise_spdf <-
+  readOGR(dsn = "data/btw05/shapefiles/Geometrie_Wahlkreise_16DBT_geo.shp",
+          encoding = "UTF-8",
+          use_iconv = TRUE) %>%
+  # Transform spatial polygons data frame to longlat data
+  spTransform(CRS("+init=epsg:4326"))
 
 
 # btw02
-btw02_wahlkreise_spdf <- readOGR(dsn = "data/btw02/shapefiles/Geometrie_Wahlkreise_15DBT_geo.shp",
-                           encoding = "UTF-8",
-                           use_iconv = TRUE)
-# Transform spatial polygons data frame to longlat data
-btw02_wahlkreise_ll <- spTransform(btw02_wahlkreise_spdf, CRS("+init=epsg:4326"))
+btw02_wahlkreise_spdf <-
+  readOGR(dsn = "data/btw02/shapefiles/Geometrie_Wahlkreise_15DBT_geo.shp",
+          encoding = "UTF-8",
+          use_iconv = TRUE) %>%
+  # Transform spatial polygons data frame to longlat data
+  spTransform(CRS("+init=epsg:4326"))
 
 
 
 
 
 
-# 
+
+#
 # # Plot on leaflet map
 # leaflet() %>%
 #   addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
