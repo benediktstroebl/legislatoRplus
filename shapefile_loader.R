@@ -1,4 +1,5 @@
 # Import shapefiles for Wahlkreise per session
+
 # btw21
 btw21_wahlkreise_spdf <-
   readOGR(dsn = "data/btw21/shapefiles/Geometrie_Wahlkreise_20DBT_geo.shp",
@@ -51,6 +52,7 @@ btw02_wahlkreise_spdf <-
           use_iconv = TRUE) %>%
   # Transform spatial polygons data frame to longlat data
   spTransform(CRS("+init=epsg:4326"))
+
 
 
 

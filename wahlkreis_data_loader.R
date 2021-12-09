@@ -40,6 +40,18 @@ btw21_kerg <- read_delim("data/btw21/wahlkreis_data/btw2021_kerg.csv",
   select(Nr, Gebiet) %>% 
   rename("WKR_NR" = Nr,
          "WKR_NAME" = Gebiet) %>% 
+  mutate(WKR_NR = as.numeric(WKR_NR)) %>% 
   drop_na()
 
+
+# Bind alls dataframe together and create column for joining with legislator df
+kerg_full <- bind_rows(btw02_kerg, 
+                       btw05_kerg,
+                       btw09_kerg,
+                       btw13_kerg,
+                       btw17_kerg,
+                       btw21_kerg) %>% 
+  mutate(WKR_NAME_join = str_replace_all(WKR_NAME, "-|–|[:blank:]", "") %>% str_to_lower()) %>% 
+  unique()
+  
   
