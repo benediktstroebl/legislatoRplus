@@ -355,8 +355,10 @@ mutate(
   left_join(dominant_party_de) %>%
   arrange(session_start) %>%
   distinct(pageid, .keep_all = TRUE) %>%
-  drop_na(constituency) %>% 
-  left_join(btw17_wahlkreisnamen, keep = TRUE, by = c("constituency" = "WKR_NAME"))
+  drop_na(constituency) %>%
+  filter(session == 19) %>%
+  filter(constituency != "Landesliste") %>%
+  left_join(btw17_kerg, keep = TRUE, by = c("constituency" = "WKR_NAME"))
 
 r_colors <- rgb(t(col2rgb(colors()) / 255))
 names(r_colors) <- colors()
@@ -408,12 +410,24 @@ server <- function(input, output, session) {
       )
   )
   
+  # Select right SpatialPolygon data for leaflet based on leg. session
+  wahlkreis_ll <- reactive(
+    case_when(
+      input$session_input == "BTW2021 | LP20" ~ btw21_wahlkreise_spdf,
+      input$session_input == "BTW2017 | LP19" ~ btw17_wahlkreise_spdf,
+      input$session_input == "BTW2013 | LP18" ~ btw13_wahlkreise_spdf,
+      input$session_input == "BTW2009 | LP17" ~ btw09_wahlkreise_spdf,
+      input$session_input == "BTW2005 | LP16" ~ btw05_wahlkreise_spdf,
+      input$session_input == "BTW2002 | LP15" ~ btw02_wahlkreise_spdf
+    )
+  )
+  
   output$mymap <- renderLeaflet({
     # Plot on leaflet map
     leaflet() %>%
       addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
       addPolygons(
-        data = wahlkreise_ll,
+        data = wahlkreis_ll,
         stroke = TRUE,
         weight = 1,
         color = "#968C83",
