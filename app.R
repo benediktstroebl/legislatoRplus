@@ -59,7 +59,9 @@ core_de <- get_core("deu") %>%
            party,
            party_logo_url,
            birthplace,
-           image_url) %>%
+           image_url,
+           birth,
+           death) %>%
   left_join(dominant_party_de) %>%
   arrange(session_start) %>%
   distinct(pageid, .keep_all = TRUE) %>%
@@ -97,14 +99,24 @@ ui <- fluidPage(
   
   selectInput("party_input", "Select Parties", party_list, multiple = TRUE),
   
-  verbatimTextOutput("name_list_reactive_output"),
+  # verbatimTextOutput("name_list_reactive_output"),
   
   # Leaflet map
   leafletOutput(outputId = "mymap"),
   
-  br()
+  br(),
   
-  # plotOutput("age_plot_final")
+  fluidRow(
+    column(
+      6,
+      plotOutput("age_plot_final")
+    ),
+    column(
+      6,
+      verbatimTextOutput("age_debug")
+    )
+  )
+  
 )
 
 server <- function(input, output, session) {
@@ -129,10 +141,6 @@ server <- function(input, output, session) {
         distinct(name) %>%
         pull
       
-    # } else if (is.null(input$session_input) & is.null(input$party_input)) {
-      
-      # mp_list
-      
     } else {
       
       core_de %>%
@@ -148,7 +156,7 @@ server <- function(input, output, session) {
   })
   
   # debugging
-  output$name_list_reactive_output <- renderPrint(name_list_reactive())
+  # output$name_list_reactive_output <- renderPrint(name_list_reactive())s
   
   # update MP name input according to session and party selection
   observe({
@@ -206,8 +214,25 @@ server <- function(input, output, session) {
                                        party_logo_url,
                                        " width='50'>"),
           TRUE ~ "No image available."
+        ),
+        age_at_death = if_else(
+          # Just compute age at death when death is higher than birth (logical check)
+          death > birth,
+          # Use lubridate for the difference and round the result
+          time_length(difftime(death, birth), "years") %>% round(3),
+          # If the birth date is larger (more recent) than the death date, an error in the data can be assumed
+          NA_real_
         )
       )
+  )
+  
+  output$age_debug <- renderPrint(
+    coord_mp() %>% 
+      pull(age_at_death)
+  )
+  
+  output$age_plot_final <- renderPlot(
+    ggplot()
   )
   
   output$mymap <- renderLeaflet({
