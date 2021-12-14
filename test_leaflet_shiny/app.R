@@ -299,7 +299,7 @@
 
 party_logo_path <- here::here("test_leaflet_shiny/party_logos")
 
-dominant_party_de <- get_political("deu") %>%
+dominant_party_de <- deu_final %>%
   group_by(pageid, party) %>%
   count %>%
   group_by(pageid) %>%
