@@ -1,6 +1,7 @@
 # Dependencies ------------------------------------------------------------
 library(shiny)
 library(tidyverse)
+library(lubridate)
 library(leaflet)
 library(legislatoR)
 library(rgdal)
@@ -12,8 +13,10 @@ library(janitor)
 # Load SpatialPolygon data for map
 source("shapefile_loader.R")
 
-# btw17_wahlkreisnamen <- read_csv2("data/wahlkreisdaten/btw17_wahlkreisnamen.csv",
-#                                   locale = locale(encoding = "latin1"))
+# Load Wahlkreis mapping for each session
+source("wahlkreis_data_loader.R")
+
+# Data Setup --------------------------------------------------------------
 
 btw17_wahlkreisnamen <- read_csv2(
   "https://www.bundeswahlleiter.de/dam/jcr/90ae9719-97bb-43f9-8e26-3e9ef0f18609/btw17_wahlkreisnamen.csv",
@@ -22,15 +25,6 @@ btw17_wahlkreisnamen <- read_csv2(
   slice(-c(1:4)) %>% 
   row_to_names(1) %>% 
   mutate(wkr_merge = str_replace_all(WKR_NAME, " ", ""))
-
-
-# Data Setup --------------------------------------------------------------
-
-library(shiny)
-library(tidyverse)
-library(leaflet)
-library(legislatoR)
-library(lubridate)
 
 # party_logo_path <- here::here("test_leaflet_shiny/party_logos")
 
@@ -100,6 +94,3 @@ core_de <- get_core("deu") %>%
 mp_list <- core_de %>%
   distinct(name) %>%
   pull
-
-
-
