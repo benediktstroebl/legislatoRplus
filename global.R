@@ -8,6 +8,7 @@ library(legislatoR)
 library(rgdal)
 library(sp)
 library(janitor)
+library(ggthemes)
 
 # Load Scripts ------------------------------------------------------------
 
@@ -16,6 +17,9 @@ source("shapefile_loader.R")
 
 # Load Wahlkreis mapping for each session
 source("wahlkreis_data_loader.R")
+
+# Load legislatoR theme
+source("theme_lgl.R")
 
 # Data Setup --------------------------------------------------------------
 
