@@ -96,6 +96,7 @@ server <- function(input, output, session) {
                                        " width='50'>"),
           TRUE ~ "No image available."
         ),
+
         # age_at_death = if_else(
         #   # Just compute age at death when death is higher than birth (logical check)
         #   death > birth,
@@ -134,10 +135,23 @@ server <- function(input, output, session) {
   # Age plot ----------------------------------------------------------------
   # Age MP
   age_mp <- reactive(
+        age_at_death = if_else(
+          # Just compute age at death when death is higher than birth (logical check)
+          death > birth,
+          # Use lubridate for the difference and round the result
+          time_length(difftime(death, birth), "years") %>% round(3),
+          # If the birth date is larger (more recent) than the death date, an error in the data can be assumed
+          NA_real_
+        )
+      )
+  )
+  
+  output$age_debug <- renderPrint(
     coord_mp() %>% 
       pull(age_at_death)
   )
   
+
   # Age plot
   age_plot <- reactive({
     
@@ -304,5 +318,9 @@ server <- function(input, output, session) {
         )
       )
   })
+  
+  output$age_plot_final <- renderPlot(
+    ggplot()
+  )
 
 }

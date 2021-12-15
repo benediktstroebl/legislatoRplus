@@ -105,6 +105,17 @@ core_de <- get_core("deu") %>%
   #          image_url,
   #          birth,
   #          death) %>%
+    )
+  ) %>%
+  distinct(pageid,
+           wikidataid,
+           name,
+           party,
+           party_logo_url,
+           birthplace,
+           image_url,
+           birth,
+           death) %>%
   left_join(dominant_party_de) %>%
   arrange(session_start) %>%
   distinct(pageid, .keep_all = TRUE) %>%
