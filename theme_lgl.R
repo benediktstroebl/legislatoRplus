@@ -4,7 +4,7 @@ theme_lgl <- function() {
   # font
   font <- "Corbel"
   # base theme
-  theme_few() %+replace%
+  ggthemes::theme_few() %+replace%
     
     theme(
       
