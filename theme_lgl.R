@@ -21,7 +21,7 @@ theme_lgl <- function() {
       
       plot.subtitle = element_text(          
         family = font,            
-        size = 12,
+        size = 15,
         margin = margin(0, 0, 5, 0)),               
       
       plot.caption = element_text(
