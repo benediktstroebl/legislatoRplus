@@ -57,8 +57,25 @@ kerg_full <- bind_rows(btw02_kerg,
                        btw13_kerg,
                        btw17_kerg,
                        btw21_kerg) %>% 
-  mutate(WKR_NAME_join = str_replace_all(WKR_NAME, "-|–|[:blank:]", "") %>% 
-           str_to_lower()) %>% 
+  mutate(WKR_NAME_join = str_replace_all(WKR_NAME, char_to_replace_for_join, "") %>% 
+           str_to_lower(),
+         session = as.integer(session)) %>%
+  mutate(
+    WKR_NAME_join = case_when(WKR_NAME_join == "brandenburganderhavelpotsdammittelmarkihavellandiiiteltowflämingi" & session==15 ~ "brandenburgadhavelpotsdammittelmarkihavellandiiiteltowflämingi",
+                              WKR_NAME_join == "herfordmindenlübbeckeii"& session==15 ~ "herfordmindenlübbeckei",
+                              WKR_NAME_join == "berlinlichtenberg" & session==15 ~ "berlinlichtenberghohenschönhausen",
+                              WKR_NAME_join == "sanktwendel" & session==17 ~ "stwendel",
+                              WKR_NAME_join == "dahmespreewaldteltowflämingiiioberspreewaldlausitzi"  & session==17 ~ "dahmespreewald",
+                              WKR_NAME_join == "brandenburganderhavelpotsdammittelmarkihavellandiiiteltowflämingi"  & session==17 ~ "brandenburganderhavel",
+                              WKR_NAME_join == "brandenburganderhavelpotsdammittelmarkihavellandiiiteltowflämingi"  & session==18 ~ "brandenburganderhavel",
+                              WKR_NAME_join == "güterslohi"  & session==18 ~ "gütersloh",
+                              WKR_NAME_join == "frieslandwilhelmshavenwittmund"  & session==18 ~ "frieslandwilhelmshaven",
+                              WKR_NAME_join == "paderborngüterslohiii" & session==18  ~ "paderborn",
+                              WKR_NAME_join == "wartburgkreiskreisfreiestadteisenachunstruthainichkreisi" & session==15 ~ "eisenachwartburgkreisunstruthainichkreisi",
+                              WKR_NAME_join == "sanktwendel" & session==15 ~ "stwendel",
+                              WKR_NAME_join == "euskirchenrheinerftkreisii" & session==18 ~ "euskirchenerftkreisii",
+                              TRUE ~ WKR_NAME_join)
+  ) %>%
   distinct()
   
   
