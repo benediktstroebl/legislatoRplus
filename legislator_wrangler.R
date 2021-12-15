@@ -7,6 +7,8 @@ deu_core <- get_core(legislature = "deu")
 # Portraits
 deu_portraits <- get_portrait(legislature = "deu")
 
+# Wikipedia traffic
+deu_traffic <- get_traffic("deu")
 
 # Join with wahlkreis_data
 deu_final <- deu_political %>% 

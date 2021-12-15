@@ -1,20 +1,33 @@
 # Dependencies ------------------------------------------------------------
 library(shiny)
+library(shinycssloaders)
 library(tidyverse)
+library(readr)
 library(lubridate)
 library(leaflet)
 library(legislatoR)
 library(rgdal)
 library(sp)
 library(janitor)
+library(ggthemes)
+library(ggdist)
 
-#  Load Scripts ----------------------------------------------------------
+# Load Scripts ------------------------------------------------------------
 
 # Load SpatialPolygon data for map
 source("shapefile_loader.R")
 
 # Load Wahlkreis mapping for each session
 source("wahlkreis_data_loader.R")
+
+# Load legislatoR data setup
+source("legislator_wrangler.R")
+
+# Load radar plot configuration 
+source("radar_plot_config.R")
+
+# Load legislatoR theme
+source("theme_lgl.R")
 
 # Data Setup --------------------------------------------------------------
 
@@ -73,6 +86,25 @@ core_de <- get_core("deu") %>%
       party == "AfD" ~ "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/AfD-Logo-2017.svg/1280px-AfD-Logo-2017.svg.png",
       party == "DP" ~ "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Logo_Deutsche_Partei.svg/1280px-Logo_Deutsche_Partei.svg.png",
       TRUE ~ NA_character_
+    ),
+    age_at_death = if_else(
+      # Just compute age at death when death is higher than birth (logical check)
+      death > birth,
+      # Use lubridate for the difference and round the result
+      time_length(difftime(death, birth), "years") %>% round(3),
+      # If the birth date is larger (more recent) than the death date, an error in the data can be assumed
+      NA_real_
+    )
+  ) %>%
+  # distinct(pageid,
+  #          wikidataid,
+  #          name,
+  #          party,
+  #          party_logo_url,
+  #          birthplace,
+  #          image_url,
+  #          birth,
+  #          death) %>%
     )
   ) %>%
   distinct(pageid,
@@ -93,4 +125,6 @@ core_de <- get_core("deu") %>%
 
 mp_list <- core_de %>%
   distinct(name) %>%
+  add_row(name = "", .before = 1) %>% 
   pull
+
