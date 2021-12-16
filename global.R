@@ -9,9 +9,30 @@ library(leaflet)
 library(legislatoR)
 library(rgdal)
 library(sp)
+library(plyr)
+library(stringr)
 library(janitor)
 library(ggthemes)
 library(ggdist)
+library(partycoloR)
+
+
+# Constants used throughout code  ----------------------------------------
+
+  # regex statement to translate constituency name/WKR_NAME to join key
+char_to_replace_for_join <- "-|–|[:blank:]|–|[.]"
+  # Party colors
+party_color_map <- list(
+  CDU = "#000000",
+  SPD = "#E3001B",
+  FDP = "#FFEE00",
+  AFD = "009EE0",
+  `BÜNDNIS 90/DIE GRÜNEN` = "#64A12D",
+  CSU = "#008AC5",
+  PDS = "#BE3075",
+  `DIE LINKE` = "#BE3075",
+  DP = "#F80000"
+)
 
 # Load Scripts ------------------------------------------------------------
 
@@ -29,6 +50,7 @@ source("radar_plot_config.R")
 
 # Load legislatoR theme
 source("theme_lgl.R")
+
 
 # Data Setup --------------------------------------------------------------
 
@@ -119,9 +141,7 @@ pol_core_de <- deu_political %>%
       TRUE ~ NA_real_
     )
   ) %>% 
-  drop_na(constituency) %>%
-  mutate(constituency_merge = str_replace_all(constituency, " ", "")) %>% 
-  left_join(btw17_wahlkreisnamen, keep = TRUE, by = c("constituency_merge" = "wkr_merge"))
-
-
+    drop_na(constituency) %>%
+    mutate(constituency_merge = str_replace_all(constituency, " ", "")) %>% 
+    left_join(btw17_wahlkreisnamen, keep = TRUE, by = c("constituency_merge" = "wkr_merge"))
 
