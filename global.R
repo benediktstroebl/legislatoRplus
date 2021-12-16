@@ -9,10 +9,6 @@ library(leaflet)
 library(legislatoR)
 library(rgdal)
 library(sp)
-<<<<<<< HEAD
-=======
-# library(plyr)
->>>>>>> 29c1c0ff1447f4d8a5f054c5d0f0790e4f399a3b
 library(stringr)
 library(janitor)
 library(ggthemes)
