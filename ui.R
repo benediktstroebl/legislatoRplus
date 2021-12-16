@@ -19,18 +19,19 @@ ui <- fluidPage(
   
   fluidRow(
     column(
-      8,
+      6,
       plotOutput("age_plot_final") %>% 
-        withSpinner(color = "black"),
-      plotOutput("session_plot_final") %>% 
         withSpinner(color = "black")
     ),
     column(
-      4,
-      verbatimTextOutput("debug_df")
+      6,
+      plotOutput("session_plot_final") %>% 
+        withSpinner(color = "black")
+      # verbatimTextOutput("debug_df")
       # verbatimTextOutput("debug_radar_plot_df"),
       # plotOutput("radar_plot_final") %>% 
         # withSpinner(color = "black")
     )
   )
+  
 )
