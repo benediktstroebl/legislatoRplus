@@ -7,7 +7,7 @@ deu_political <- get_political(legislature = "deu")
 deu_core <- get_core(legislature = "deu")
 
 # Portraits
-deu_portraits <- get_portrait(legislature = "deu")
+deu_portrait <- get_portrait(legislature = "deu")
 
 # If there is a MP with multiple party affiliations; 
 dominant_party_de <- deu_political %>%
@@ -37,7 +37,7 @@ deu_political_final <- deu_political %>%
 
 # CORE DE
 core_de <- deu_core %>%
-  left_join(deu_portraits) %>%
+  left_join(deu_portrait) %>%
   left_join(deu_political_final, by = "pageid") %>%
   filter(session >= 15) %>% 
   mutate(

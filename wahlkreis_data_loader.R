@@ -119,6 +119,7 @@ kerg_full <- bind_rows(btw02_kerg,
            str_to_lower(),
          session = as.integer(session)) %>%
   mutate(
+    # Some manual modification due to inconsistencies in naming of constituencies of the different datasets
     WKR_NAME_join = case_when(WKR_NAME_join == "brandenburganderhavelpotsdammittelmarkihavellandiiiteltowflämingi" & session==15 ~ "brandenburgadhavelpotsdammittelmarkihavellandiiiteltowflämingi",
                               WKR_NAME_join == "herfordmindenlübbeckeii"& session==15 ~ "herfordmindenlübbeckei",
                               WKR_NAME_join == "berlinlichtenberg" & session==15 ~ "berlinlichtenberghohenschönhausen",

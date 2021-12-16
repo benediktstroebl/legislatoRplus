@@ -9,7 +9,6 @@ library(leaflet)
 library(legislatoR)
 library(rgdal)
 library(sp)
-library(plyr)
 library(stringr)
 library(janitor)
 library(ggthemes)
@@ -28,6 +27,7 @@ party_color_map <- list(
   FDP = "#FFEE00",
   AFD = "009EE0",
   `BÜNDNIS 90/DIE GRÜNEN` = "#64A12D",
+  `BÃœNDNIS 90/DIE GRÃœNEN` = "#64A12D",
   CSU = "#008AC5",
   PDS = "#BE3075",
   `DIE LINKE` = "#BE3075",
@@ -44,6 +44,9 @@ source("wahlkreis_data_loader.R")
 
 # Load legislatoR data setup
 source("legislator_wrangler.R")
+
+# join shapefiles with legislatoR & constituency data and create popup html
+source("shapefile_wrangler.R")
 
 # Load radar plot configuration 
 source("radar_plot_config.R")
@@ -116,7 +119,7 @@ term_length_de <- deu_political %>%
 
 pol_core_de <- deu_political %>% 
   left_join(deu_core) %>% 
-  left_join(portrait_de) %>% 
+  left_join(deu_portrait) %>% 
   left_join(dominant_party_de) %>%
   left_join(term_length_de) %>%
   left_join(max_session_de) %>% 
