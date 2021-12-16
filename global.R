@@ -9,7 +9,7 @@ library(leaflet)
 library(legislatoR)
 library(rgdal)
 library(sp)
-library(plyr)
+# library(plyr)
 library(stringr)
 library(janitor)
 library(ggthemes)
@@ -86,18 +86,18 @@ max_session_de <- deu_political %>%
 
 dominant_party_de <- deu_political %>%
   group_by(pageid, party) %>%
-  count %>%
+  dplyr::summarise(n = n()) %>% 
   group_by(pageid) %>%
-  filter(n == max(n)) %>%
+  dplyr::filter(n == max(n)) %>%
   left_join(
-    get_political("deu") %>%
+    deu_political %>%
       group_by(pageid) %>%
       filter(session_start == min(session_start)) %>%
       arrange(session_start) %>%
       distinct(pageid, .keep_all = T)
   ) %>%
   group_by(pageid) %>%
-  filter(session_start == min(session_start))
+  dplyr::filter(session_start == min(session_start))
 
 # Term length by MP
 term_length_de <- deu_political %>% 
@@ -116,7 +116,7 @@ term_length_de <- deu_political %>%
 
 pol_core_de <- deu_political %>% 
   left_join(deu_core) %>% 
-  left_join(portrait_de) %>% 
+  left_join(deu_portrait) %>% 
   left_join(dominant_party_de) %>%
   left_join(term_length_de) %>%
   left_join(max_session_de) %>% 
