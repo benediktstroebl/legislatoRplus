@@ -23,7 +23,6 @@ btw17_wahlkreise_spdf@data <- btw17_wahlkreise_spdf@data %>%
   mutate(session = 19, WKR_NR = as.integer(WKR_NR))
 
 
-
 # btw13
 btw13_wahlkreise_spdf <-
   readOGR(dsn = "data/btw13/shapefiles/Geometrie_Wahlkreise_18DBT.shp",
@@ -73,21 +72,21 @@ btw02_wahlkreise_spdf@data <- btw02_wahlkreise_spdf@data %>%
 
 
 
-
-
-
+# 
+# 
+# 
 # Plot on leaflet map
 # leaflet() %>%
 #   addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
 #   addPolygons(
-#     data = btw02_wahlkreise_spdf,
+#     data = btw17_wahlkreise_spdf,
 #     stroke = TRUE,
 #     weight = 1,
 #     color = "#968C83",
 #     fillColor = '#968C83',
 #     fillOpacity = 0.5,
 #     smoothFactor = 0.5,
-#     popup = btw02_wahlkreise_spdf@data$WKR_NAME,
+#     popup = btw17_wahlkreise_spdf@data$WKR_NAME.x,
 #     highlightOptions = highlightOptions(
 #       color = '#636363',
 #       fillColor = '#636363',

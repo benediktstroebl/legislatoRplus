@@ -1,0 +1,67 @@
+---
+title: "Final Data Science Project: `legislatoR+`"
+subtitle: "GRAD-C11: Introduction to Data Science | Hertie School | Fall Semester 2021"
+author: "Benedikt Ströbl, Lukas Warode\n\nWord count: `r as.integer(sub('(\\d+).+$', '\\1', system(sprintf('wc -w %s', knitr::current_input()), intern = TRUE))) - 20`"
+date: "Last compiled on: `r format(Sys.Date(), '%d %B %Y')`"
+output: 
+  html_document:
+    toc: true
+    theme: paper
+    css: hertie_style.css
+---
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Hertie_School_of_Governance_logo.svg/2560px-Hertie_School_of_Governance_logo.svg.png" style="position:absolute;top:20px;right:20px;" width="200" />
+
+```{r setup, include=FALSE}
+# knitr chunk options
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+
+# packages
+library(tidyverse)
+library(legislatoR)
+library(cranlogs)
+```
+
+# `legislatoR+`
+
+## Executive Summary
+
+text text text
+
+## Statement of Contribution
+
+# Goal and Motivation
+
+# …
+
+```{r}
+source(here::here("theme_lgl.R"))
+
+cran_downloads(
+  packages = "legislatoR",
+  # Date of package documentation
+  from = as.Date("2020-04-24"),
+  to = Sys.Date()
+) %>% 
+  ggplot(aes(x = date, y = count)) + 
+  geom_point(alpha = 0.5) +
+  geom_smooth() + 
+  theme_lgl() +
+  labs(title = "Downloads of legislatoR (CRAN)",
+       x = "Date",
+       y = "Download (N)") + 
+  scale_x_date(breaks = "3 months", date_labels = "%B %Y")
+```
+
+
+# Scalability
+
+## Visibility
+
+## Modularity
+
+# Obstacles and Problems
+
+# Outlook and Conclusion
+
+# References

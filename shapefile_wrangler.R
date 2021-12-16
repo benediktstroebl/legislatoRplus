@@ -9,20 +9,130 @@ joinShapefileWithDeuCore <-
                 by = c("constituency_join" = "constituency_join",
                        "WKR_NR" = "WKR_NR",
                        "session" = "session")) %>%
+      distinct() %>% 
       mutate(
         popup_image = case_when(
           !is.na(image_url) & !is.na(party_logo_url) ~ paste0(
-            "<img src = ",
-            image_url,
-            " width='50'>",
-            " </br>",
-            " </br>",
-            " <img src = ",
-            party_logo_url,
-            " width='50'>",
-            "<p>",
-            name,
-            "</p>"
+            "<style>
+                @font-face {
+                font-family: 'Corbel';
+                src: url('/Corbel.eot');
+                src: url('/Corbel.eot?#iefix') format('embedded-opentype'),
+                    url('/Corbel.woff2') format('woff2'),
+                    url('/Corbel.woff') format('woff'),
+                    url('/Corbel.ttf') format('truetype'),
+                    url('/Corbel.svg#Corbel') format('svg');
+                font-weight: normal;
+                font-style: normal;
+                font-display: swap;
+                }
+                
+                @font-face {
+                font-family: 'Old London';
+                src: url('/OldLondon.woff2') format('woff2'),
+                    url('/OldLondon.woff') format('woff');
+                font-weight: normal;
+                font-style: normal;
+                font-display: swap;
+                }
+            
+                table {
+                    font-family: Corbel;
+                    font-size: 12px;
+                    width: 200px;
+                    margin-left:auto; 
+                    margin-right:auto
+                }
+                
+                tr td {
+                  padding: 0;
+                  margin-top: 3px;
+                  margin-bottom: 3px;
+                  height: auto;
+                }
+                
+                .popup-content{
+                    width:auto !important;
+                    height:auto !important;
+                }
+            
+                a {
+                color: black;
+                text-decoration: none;
+                }
+            
+                a:hover {
+                    text-decoration: underline;
+                }
+            
+                p {
+                    color: black;
+                }
+                
+                span {
+                    color: black;
+                    font-weight: bold
+                }
+            
+            </style>",
+            "<div class='popup-content'>",
+            "<table>",
+                "<tr>
+                    <td style='text-align:center' colspan='2'>",
+                      "<img src = ",
+                      image_url,
+                      " width='140px'>",
+                    "</td>",
+                "</tr>",
+                "<tr>
+                    <td style='text-align:center' colspan='2'>",
+                      "<img src = ",
+                      party_logo_url,
+                      " width='70px'>",
+                "</td>",
+                "</tr>",
+                "<tr>
+                    <td style='text-align:center'>",
+                    "<span>",
+                      "Name",
+                    "</span>",
+                    "</td>",
+                    "<td style='text-align:center'>",
+                      name,
+                    "</td>",
+                "</tr>",
+            "<tr>
+                    <td style='text-align:center'>",
+            "<span>",
+            "Age",
+            "</span>",
+            "</td>",
+            "<td style='text-align:center'>",
+            age,
+            "</td>",
+            "</tr>",
+            "<tr>
+              <td style='text-align:center'>",
+            "<span>",
+            "Constituency",
+            "</span>",
+            "</td>",
+            "<td style='text-align:center'>",
+            WKR_NAME.x,
+            "</td>",
+            "</tr>",
+            "<tr>
+              <td style='text-align:center'>",
+            "<span>",
+            "Sessions Served",
+            "</span>",
+            "</td>",
+            "<td style='text-align:center'>",
+            sessions_served,
+            "</td>",
+            "</tr>",
+            "</table>",
+            "</div>"
           ),
           !is.na(image_url) ~ paste0("<img src = ",
                                      party_logo_url,
@@ -81,35 +191,35 @@ btw21_wahlkreise_spdf@data <- joinShapefileWithDeuCore(btw21_wahlkreise_spdf, 20
 #   anti_join(core_de,
 #             by = c("constituency_join" = "constituency_join",
 #                    "session" = "session"))
-
-
-
-# btw17
-btw17_wahlkreise_spdf@data <-
-  btw17_wahlkreise_spdf@data %>%
-  mutate(
-    session = 19,
-    WKR_NR = as.integer(WKR_NR)
-  ) %>%
-  mutate(constituency_join = str_replace_all(WKR_NAME, char_to_replace_for_join, "") %>% str_to_lower()) %>%
-  left_join(
-    core_de,
-    by = c("constituency_join" = "constituency_join",
-           "session" = "session")) %>%
-  mutate(popup_image = case_when(
-    !is.na(image_url) & !is.na(party_logo_url) ~ paste0(
-      "<img src = ",
-      image_url,
-      " width='50'>",
-      " </br>",
-      " </br>",
-      " <img src = ",
-      party_logo_url,
-      " width='50'>"
-    ),
-    !is.na(image_url) ~ paste0("<img src = ",
-                               party_logo_url,
-                               " width='50'>"),
-    TRUE ~ "No image available."
-  ))
+# 
+# 
+# 
+# # btw17
+# btw17_wahlkreise_spdf@data <-
+#   btw17_wahlkreise_spdf@data %>%
+#   mutate(
+#     session = 19,
+#     WKR_NR = as.integer(WKR_NR)
+#   ) %>%
+#   mutate(constituency_join = str_replace_all(WKR_NAME, char_to_replace_for_join, "") %>% str_to_lower()) %>%
+#   left_join(
+#     core_de,
+#     by = c("constituency_join" = "constituency_join",
+#            "session" = "session")) %>%
+#   mutate(popup_image = case_when(
+#     !is.na(image_url) & !is.na(party_logo_url) ~ paste0(
+#       "<img src = ",
+#       image_url,
+#       " width='50'>",
+#       " </br>",
+#       " </br>",
+#       " <img src = ",
+#       party_logo_url,
+#       " width='50'>"
+#     ),
+#     !is.na(image_url) ~ paste0("<img src = ",
+#                                party_logo_url,
+#                                " width='50'>"),
+#     TRUE ~ "No image available."
+#   ))
 

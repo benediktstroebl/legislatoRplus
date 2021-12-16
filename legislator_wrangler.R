@@ -25,6 +25,10 @@ dominant_party_de <- deu_political %>%
   group_by(pageid) %>%
   filter(session_start == min(session_start))
 
+# Wikipedia traffic
+deu_traffic <- get_traffic("deu")
+
+
 # Join legislatoR deu_political with wahlkreis_data
 deu_political_final <- deu_political %>% 
   mutate(constituency_join = str_replace_all(constituency, char_to_replace_for_join, "") %>% str_to_lower()) %>% 
@@ -51,8 +55,31 @@ core_de <- deu_core %>%
       party == "AfD" ~ "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/AfD-Logo-2017.svg/1280px-AfD-Logo-2017.svg.png",
       party == "DP" ~ "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Logo_Deutsche_Partei.svg/1280px-Logo_Deutsche_Partei.svg.png",
       TRUE ~ NA_character_
+    ),
+    party_color = case_when(
+      party == "SPD" ~ party_color_map$SPD,
+      party == "CDU" ~ party_color_map$CDU,
+      party == "FDP" ~ party_color_map$FDP,
+      party == "CSU" ~ party_color_map$CSU,
+      party == "BÜNDNIS 90/DIE GRÜNEN" ~ party_color_map$`BÜNDNIS 90/DIE GRÜNEN`,
+      party == "DIE LINKE" ~ party_color_map$`DIE LINKE`,
+      party == "PDS" ~ party_color_map$PDS,
+      party == "AfD" ~ party_color_map$AFD,
+      party == "DP" ~ party_color_map$DP
+    )
+  ) %>% 
+  # Create new column "sessions_served" per pageid
+  left_join(aggregate(session~pageid, deu_political, paste0, collapse=", ") %>% dplyr::rename(sessions_served = session)) %>%
+  mutate(
+    age = case_when(
+      # Compute age at death when death is higher than birth (logical check)
+      death > birth ~ time_length(difftime(death, birth), "years") %>% ceiling(),
+      # If MP is alive compute difference between birth date and current date
+      is.na(death) ~ time_length(difftime(Sys.Date(), birth), "years") %>% ceiling(),
+      TRUE ~ NA_real_
     )
   )
+  
   
   
   
