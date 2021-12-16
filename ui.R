@@ -27,7 +27,7 @@ ui <- fluidPage(
     ),
     column(
       4,
-      print("test")
+      verbatimTextOutput("debug_df")
       # verbatimTextOutput("debug_radar_plot_df"),
       # plotOutput("radar_plot_final") %>% 
         # withSpinner(color = "black")

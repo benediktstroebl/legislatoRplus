@@ -6,7 +6,7 @@ server <- function(input, output, session) {
     
     if (!is.null(input$session_input) & is.null(input$party_input)) {
       
-      core_de %>%
+      pol_core_de %>%
         filter(
           session %in% input$session_input
         ) %>%
@@ -16,7 +16,7 @@ server <- function(input, output, session) {
       
     } else if (is.null(input$session_input) & !is.null(input$party_input)) {
       
-      core_de %>%
+      pol_core_de %>%
         filter(
           party %in% input$party_input
         ) %>%
@@ -26,7 +26,7 @@ server <- function(input, output, session) {
       
     } else {
       
-      core_de %>%
+      pol_core_de %>%
         filter(
           session %in% input$session_input,
           party %in% input$party_input
@@ -76,7 +76,7 @@ server <- function(input, output, session) {
   })
   
   coord_mp <- reactive(
-    core_de %>%
+    pol_core_de %>%
       filter(name == input$name_input)# %>%
       # separate(birthplace, into = c("lat", "long"), sep = ",") %>%
       # mutate(
@@ -96,31 +96,21 @@ server <- function(input, output, session) {
       #                                  " width='50'>"),
       #     TRUE ~ "No image available."
       #   )
-
-        # age_at_death = if_else(
-        #   # Just compute age at death when death is higher than birth (logical check)
-        #   death > birth,
-        #   # Use lubridate for the difference and round the result
-        #   time_length(difftime(death, birth), "years") %>% round(3),
-        #   # If the birth date is larger (more recent) than the death date, an error in the data can be assumed
-        #   NA_real_
-        # )
-      # )
   )
   
   # Reactive data frame based on input
   reactive_df <- reactive({
     ## 'session_input'
     if (!is.null(input$session_input) & is.null(input$party_input)) {
-      core_de %>% 
+      pol_core_de %>% 
         filter(session %in% input$session_input)
     ## 'party_input'
     } else if (is.null(input$session_input) & !is.null(input$party_input)) {
-      core_de %>% 
+      pol_core_de %>% 
         filter(party %in% input$party_input)
     ## both
     } else {
-      core_de %>% 
+      pol_core_de %>% 
         filter(session %in% input$session_input,
                party %in% input$party_input)
     }
@@ -129,14 +119,23 @@ server <- function(input, output, session) {
   # Name MP
   name_mp <- reactive(
     coord_mp() %>% 
-      pull(name)
+      distinct(name) %>% 
+      pull
+
+  )
+  
+  # debug df
+  output$debug_df <- renderPrint(
+    reactive_df() %>% 
+      nrow
   )
   
   # Age plot ----------------------------------------------------------------
   # Age MP
   age_mp <- reactive(
     coord_mp() %>% 
-      pull(age_at_death)
+      distinct(age_at_death) %>% 
+      pull
   )
 
   # Age plot
@@ -149,7 +148,7 @@ server <- function(input, output, session) {
         geom_boxplot(width = 0.1) +
         theme_lgl() +
         labs(title = "Age",
-             subtitle = "Histogram",
+             subtitle = "Density & Boxplot",
              x = "", 
              y = "")
       
@@ -160,7 +159,7 @@ server <- function(input, output, session) {
         geom_boxplot(width = 0.1) +
         theme_lgl() +
         labs(title = "Age",
-             subtitle = paste0("Histogram | MP: ", name_mp()),
+             subtitle = paste0("Density & Boxplot | MP: ", name_mp()),
              x = "", 
              y = "") +
         geom_vline(xintercept = age_mp(), 
@@ -200,7 +199,16 @@ server <- function(input, output, session) {
   # Term Length MP
   term_length_mp <- reactive(
     coord_mp() %>% 
-      pull(term_length)
+      distinct(term_length) %>% 
+      pull
+  )
+  
+  # Value for dynamic x axis of plots
+  max_x_axis <- reactive(
+    reactive_df() %>% 
+      filter(term_length == max(term_length)) %>% 
+      distinct(term_length) %>% 
+      pull
   )
   
   session_plot <- reactive({
@@ -210,9 +218,10 @@ server <- function(input, output, session) {
       ggplot(reactive_df(), aes(x = term_length)) +
         stat_slab(alpha = 0.5, justification = 0) +
         geom_boxplot(width = 0.1) +
+        xlim(0, max_x_axis()) +
         theme_lgl() +
         labs(title = "Total Term of Office",
-             subtitle = "Histogram",
+             subtitle = "Density & Boxplot",
              x = "", 
              y = "")
       
@@ -221,9 +230,10 @@ server <- function(input, output, session) {
       ggplot(reactive_df(), aes(x = term_length)) +
         stat_slab(alpha = 0.5, justification = 0) +
         geom_boxplot(width = 0.1) +
+        xlim(0, max_x_axis()) +
         theme_lgl() +
         labs(title = "Total Term of Office",
-             subtitle = paste0("Histogram | MP: ", name_mp()),
+             subtitle = paste0("Density & Boxplot | MP: ", name_mp()),
              x = "", 
              y = "") +
         geom_vline(xintercept = term_length_mp(), 
