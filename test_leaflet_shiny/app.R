@@ -15,7 +15,7 @@ ui <- shiny::htmlTemplate(
   name_selector = selectInput("name_input", "MP Name", mp_list, selected = NULL),
   
   # Leaflet map
-  leaflet_map = leafletOutput(outputId = "map")
+  leaflet_map = leafletOutput(outputId = "map", height = "800")
   )
 
 server <- function(input, output, session) {
@@ -44,8 +44,8 @@ server <- function(input, output, session) {
         data = wahlkreis_ll(),
         stroke = TRUE,
         weight = 1,
-        color = "#968C83",
-        fillColor = '#968C83',
+        color = ~ party_color,
+        fillColor = ~ party_color,
         fillOpacity = 0.5,
         smoothFactor = 0.5,
         popup = ~ popup_image,

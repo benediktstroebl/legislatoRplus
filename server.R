@@ -6,7 +6,7 @@ server <- function(input, output, session) {
     
     if (!is.null(input$session_input) & is.null(input$party_input)) {
       
-      core_de %>%
+      pol_core_de %>%
         filter(
           session %in% input$session_input
         ) %>%
@@ -16,7 +16,7 @@ server <- function(input, output, session) {
       
     } else if (is.null(input$session_input) & !is.null(input$party_input)) {
       
-      core_de %>%
+      pol_core_de %>%
         filter(
           party %in% input$party_input
         ) %>%
@@ -26,7 +26,7 @@ server <- function(input, output, session) {
       
     } else {
       
-      core_de %>%
+      pol_core_de %>%
         filter(
           session %in% input$session_input,
           party %in% input$party_input
@@ -76,51 +76,41 @@ server <- function(input, output, session) {
   })
   
   coord_mp <- reactive(
-    core_de %>%
-      filter(name == input$name_input) %>%
-      separate(birthplace, into = c("lat", "long"), sep = ",") %>%
-      mutate(
-        across(c("lat", "long"), ~ as.numeric(.x)),
-        popup_image = case_when(
-          !is.na(image_url) & !is.na(party_logo_url) ~ paste0(
-            "<img src = ",
-            image_url,
-            " width='50'>",
-            " </br>",
-            " </br>",
-            " <img src = ",
-            party_logo_url,
-            " width='50'>"
-          ),!is.na(image_url) ~ paste0("<img src = ",
-                                       party_logo_url,
-                                       " width='50'>"),
-          TRUE ~ "No image available."
-        ),
-
-        # age_at_death = if_else(
-        #   # Just compute age at death when death is higher than birth (logical check)
-        #   death > birth,
-        #   # Use lubridate for the difference and round the result
-        #   time_length(difftime(death, birth), "years") %>% round(3),
-        #   # If the birth date is larger (more recent) than the death date, an error in the data can be assumed
-        #   NA_real_
-        # )
-      )
+    pol_core_de %>%
+      filter(name == input$name_input)# %>%
+      # separate(birthplace, into = c("lat", "long"), sep = ",") %>%
+      # mutate(
+      #   across(c("lat", "long"), ~ as.numeric(.x)),
+      #   popup_image = case_when(
+      #     !is.na(image_url) & !is.na(party_logo_url) ~ paste0(
+      #       "<img src = ",
+      #       image_url,
+      #       " width='50'>",
+      #       " </br>",
+      #       " </br>",
+      #       " <img src = ",
+      #       party_logo_url,
+      #       " width='50'>"
+      #     ),!is.na(image_url) ~ paste0("<img src = ",
+      #                                  party_logo_url,
+      #                                  " width='50'>"),
+      #     TRUE ~ "No image available."
+      #   )
   )
   
   # Reactive data frame based on input
   reactive_df <- reactive({
     ## 'session_input'
     if (!is.null(input$session_input) & is.null(input$party_input)) {
-      core_de %>% 
+      pol_core_de %>% 
         filter(session %in% input$session_input)
     ## 'party_input'
     } else if (is.null(input$session_input) & !is.null(input$party_input)) {
-      core_de %>% 
+      pol_core_de %>% 
         filter(party %in% input$party_input)
     ## both
     } else {
-      core_de %>% 
+      pol_core_de %>% 
         filter(session %in% input$session_input,
                party %in% input$party_input)
     }
@@ -129,28 +119,24 @@ server <- function(input, output, session) {
   # Name MP
   name_mp <- reactive(
     coord_mp() %>% 
-      pull(name)
+      distinct(name) %>% 
+      pull
+
+  )
+  
+  # debug df
+  output$debug_df <- renderPrint(
+    reactive_df() %>% 
+      nrow
   )
   
   # Age plot ----------------------------------------------------------------
   # Age MP
   age_mp <- reactive(
-        age_at_death = if_else(
-          # Just compute age at death when death is higher than birth (logical check)
-          death > birth,
-          # Use lubridate for the difference and round the result
-          time_length(difftime(death, birth), "years") %>% round(3),
-          # If the birth date is larger (more recent) than the death date, an error in the data can be assumed
-          NA_real_
-        )
-      )
-  )
-  
-  output$age_debug <- renderPrint(
     coord_mp() %>% 
-      pull(age_at_death)
+      distinct(age_at_death) %>% 
+      pull
   )
-  
 
   # Age plot
   age_plot <- reactive({
@@ -162,7 +148,7 @@ server <- function(input, output, session) {
         geom_boxplot(width = 0.1) +
         theme_lgl() +
         labs(title = "Age",
-             subtitle = "Histogram",
+             subtitle = "Density & Boxplot",
              x = "", 
              y = "")
       
@@ -173,7 +159,7 @@ server <- function(input, output, session) {
         geom_boxplot(width = 0.1) +
         theme_lgl() +
         labs(title = "Age",
-             subtitle = paste0("Histogram | MP: ", name_mp()),
+             subtitle = paste0("Density & Boxplot | MP: ", name_mp()),
              x = "", 
              y = "") +
         geom_vline(xintercept = age_mp(), 
@@ -184,7 +170,8 @@ server <- function(input, output, session) {
                       label = paste0("Age ", 
                                      name_mp(),
                                      ": ", 
-                                     as.character(round(age_mp())))
+                                     as.character(round(age_mp())),
+                                     " years")
                       ), 
                   angle = 90,
                   vjust = -0.5,
@@ -208,17 +195,64 @@ server <- function(input, output, session) {
     
   })
   
-  
-
   # Session plot ------------------------------------------------------------
-  # Session MP
-  session_mp <- reactive(
+  # Term Length MP
+  term_length_mp <- reactive(
     coord_mp() %>% 
-      pull(session)
+      distinct(term_length) %>% 
+      pull
+  )
+  
+  # Value for dynamic x axis of plots
+  max_x_axis <- reactive(
+    reactive_df() %>% 
+      filter(term_length == max(term_length)) %>% 
+      distinct(term_length) %>% 
+      pull
   )
   
   session_plot <- reactive({
-    ggplot()
+    
+    # Plot without highlight
+    if (input$name_input == "") {
+      ggplot(reactive_df(), aes(x = term_length)) +
+        stat_slab(alpha = 0.5, justification = 0) +
+        geom_boxplot(width = 0.1) +
+        xlim(0, max_x_axis()) +
+        theme_lgl() +
+        labs(title = "Total Term of Office",
+             subtitle = "Density & Boxplot",
+             x = "", 
+             y = "")
+      
+      # Highlight MP with geom_vline()
+    } else {
+      ggplot(reactive_df(), aes(x = term_length)) +
+        stat_slab(alpha = 0.5, justification = 0) +
+        geom_boxplot(width = 0.1) +
+        xlim(0, max_x_axis()) +
+        theme_lgl() +
+        labs(title = "Total Term of Office",
+             subtitle = paste0("Density & Boxplot | MP: ", name_mp()),
+             x = "", 
+             y = "") +
+        geom_vline(xintercept = term_length_mp(), 
+                   alpha = 0.5,
+                   color = "black") + 
+        geom_text(aes(x = term_length_mp(), 
+                      y = 0.5, 
+                      label = paste0("Total Term of Office ", 
+                                     name_mp(),
+                                     ": ", 
+                                     as.character(round(term_length_mp())),
+                                     " years")
+        ), 
+        angle = 90,
+        vjust = -0.5,
+        family = "Corbel",
+        color = "grey40")
+    }
+    
   })
   
   # Session plot (histogram)
@@ -234,64 +268,65 @@ server <- function(input, output, session) {
     session_plot()
     
   })
-  
 
   # Radar plot --------------------------------------------------------------
   # Data frame for radar plot -- MP
-  radar_plot_df <- reactive({
-    
-    deu_metrics %>% 
-      filter(name %in% input$name_input)
-    
-  })
+  # radar_plot_df <- reactive({
+  #   
+  #   deu_metrics %>% 
+  #     filter(name %in% input$name_input)
+  #   
+  # })
   
   # Data frame for radar plot -- comparison group
   
-  output$debug_radar_plot_df <- renderPrint(
-    radar_plot_df()
-    # deu_metrics %>% 
-    #   slice(1:100)
-    # "test"
-  )
+  # output$debug_radar_plot_df <- renderPrint(
+  #   radar_plot_df()
+  # )
   
-  radar_plot <- reactive({
+  # radar_plot <- reactive({
+  #   
+  #   radar_plot_df() %>% 
+  #     ggplot(
+  #       aes(
+  #         x = var,
+  #         y = value,
+  #         group = name,
+  #         color = name,
+  #         fill = name
+  #       )
+  #     ) + 
+  #     geom_point(show.legend = FALSE) +
+  #     geom_polygon(alpha = 0.5) +
+  #     coord_radar() +
+  #     labs(x = "", y = "") +
+  #     theme_lgl() +
+  #     theme(
+  #       axis.text.y = element_blank(),
+  #       axis.ticks.y = element_blank(),
+  #       legend.position = "top",
+  #       plot.title = element_text(hjust = 0.5)
+  #     )
+  #   
+  # })
     
-    radar_plot_df() %>% 
-      ggplot(
-        aes(
-          x = var,
-          y = value,
-          group = name,
-          color = name,
-          fill = name,
-        )
-      ) + 
-      geom_point(show.legend = FALSE) +
-      geom_polygon(alpha = 0.5) +
-      coord_radar() +
-      labs(x = "", y = "") +
-      theme_lgl() +
-      theme(
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        legend.position = "top",
-        plot.title = element_text(hjust = 0.5)
-      )
-    
-  })
-    
-    output$radar_plot_final <- renderPlot({
+    # output$radar_plot_final <- renderPlot({
+    # 
+    #   validate(
+    #     need(
+    #       (input$name_input != ""),
+    #       "\n\n\n\nPlease select an MP"
+    #     )
+    #   )
+    # 
+    #   radar_plot()
+    #   
+    # })
+  
 
-      validate(
-        need(
-          (input$name_input != ""),
-          "\n\n\n\nPlease select an MP"
-        )
-      )
+  
 
-      radar_plot()
-      
-    })
+  
 
   # Map ---------------------------------------------------------------------
   output$mymap <- renderLeaflet({
@@ -319,8 +354,20 @@ server <- function(input, output, session) {
       )
   })
   
-  output$age_plot_final <- renderPlot(
-    ggplot()
-  )
+  # Usability features ------------------------------------------------------
+  observe({
+    
+    if (is.null(input$session_input) & is.null(input$party_input)) {
+      
+      # disable name input if there is no session and party input
+      disable("name_input")
+      
+    } else {
+      
+      enable("name_input")
+      
+    }
+    
+  })
 
 }
