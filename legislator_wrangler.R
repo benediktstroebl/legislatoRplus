@@ -7,7 +7,7 @@ deu_political <- get_political(legislature = "deu")
 deu_core <- get_core(legislature = "deu")
 
 # Portraits
-deu_portraits <- get_portrait(legislature = "deu")
+deu_portrait <- get_portrait(legislature = "deu")
 
 # If there is a MP with multiple party affiliations; 
 dominant_party_de <- deu_political %>%
