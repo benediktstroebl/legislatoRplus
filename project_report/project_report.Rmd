@@ -10,7 +10,7 @@ output:
     css: hertie_style.css
 ---
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Hertie_School_of_Governance_logo.svg/2560px-Hertie_School_of_Governance_logo.svg.png" style="position:absolute;top:20px;right:20px;" width="200" />
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Hertie_School_of_Governance_logo.svg/2560px-Hertie_School_of_Governance_logo.svg.png" style="position:absolute;top:20px;right:20px;" width="200"/>
 
 ```{r setup, include=FALSE}
 # knitr chunk options
@@ -29,6 +29,16 @@ library(cranlogs)
 text text text
 
 ## Statement of Contribution
+
+Most of the project work ran in a very collaborative dynamic. In the preliminary stages, there was a lively exchange between both project members, with most of the ideas and theoretical approaches of the project having been implicitly worked on in two parts.
+
+In the advanced and practical stages, a certain division of labor crystallized. However, a large part of the project was approached in a co-working place, which is why many practical projects and especially problems were evaluated directly together.
+
+In detail, the division of work was as follows:
+
+- __Benedikt Ströbl__ mainly took care of the configuration of the HTML template and handled the different map data formats. He also created the visual map base.
+
+- __Lukas Warode__ was mainly involved in setting up the Shiny backend and did a lot of the practical data manipulation inside and outside the `Shiny` reactivity. He also worked on the `ggplot2` foundation of descriptive statistics.
 
 # Goal and Motivation
 
