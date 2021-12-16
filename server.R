@@ -1,7 +1,7 @@
-library(shiny) # remove if global.R works properly
-
+# server
 server <- function(input, output, session) {
   
+  # Reactive name list based on varying inputs
   name_list_reactive <- reactive({
     
     if (!is.null(input$session_input) & is.null(input$party_input)) {
@@ -75,30 +75,13 @@ server <- function(input, output, session) {
     
   })
   
-  coord_mp <- reactive(
+  # Reactive data frame based on MP name input
+  mp_df <- reactive(
     pol_core_de %>%
-      filter(name == input$name_input)# %>%
-      # separate(birthplace, into = c("lat", "long"), sep = ",") %>%
-      # mutate(
-      #   across(c("lat", "long"), ~ as.numeric(.x)),
-      #   popup_image = case_when(
-      #     !is.na(image_url) & !is.na(party_logo_url) ~ paste0(
-      #       "<img src = ",
-      #       image_url,
-      #       " width='50'>",
-      #       " </br>",
-      #       " </br>",
-      #       " <img src = ",
-      #       party_logo_url,
-      #       " width='50'>"
-      #     ),!is.na(image_url) ~ paste0("<img src = ",
-      #                                  party_logo_url,
-      #                                  " width='50'>"),
-      #     TRUE ~ "No image available."
-      #   )
+      filter(name == input$name_input)
   )
   
-  # Reactive data frame based on input
+  # Reactive data frame based on session and party input
   reactive_df <- reactive({
     ## 'session_input'
     if (!is.null(input$session_input) & is.null(input$party_input)) {
@@ -118,22 +101,16 @@ server <- function(input, output, session) {
   
   # Name MP
   name_mp <- reactive(
-    coord_mp() %>% 
+    mp_df() %>% 
       distinct(name) %>% 
       pull
 
   )
   
-  # debug df
-  output$debug_df <- renderPrint(
-    reactive_df() %>% 
-      nrow
-  )
-  
   # Age plot ----------------------------------------------------------------
   # Age MP
   age_mp <- reactive(
-    coord_mp() %>% 
+    mp_df() %>% 
       distinct(age_at_death) %>% 
       pull
   )
@@ -198,7 +175,7 @@ server <- function(input, output, session) {
   # Session plot ------------------------------------------------------------
   # Term Length MP
   term_length_mp <- reactive(
-    coord_mp() %>% 
+    mp_df() %>% 
       distinct(term_length) %>% 
       pull
   )
@@ -354,6 +331,34 @@ server <- function(input, output, session) {
       )
   })
   
+
+  # Download section --------------------------------------------------------
+  # Age plot
+  output$age_plot_download <- downloadHandler(
+    
+    filename = "age_plot.png",
+    
+    content = function(file) {
+      
+      ggsave(age_plot(), filename = file, device = "png", width = 8, height = 5)
+      
+    }
+    
+  )
+  
+  # Term length plot
+  output$term_length_plot_download <- downloadHandler(
+    
+    filename = "term_length_plot.png",
+    
+    content = function(file) {
+      
+      ggsave(session_plot(), filename = file, device = "png", width = 8, height = 5)
+      
+    }
+    
+  )
+  
   # Usability features ------------------------------------------------------
   observe({
     
@@ -362,9 +367,18 @@ server <- function(input, output, session) {
       # disable name input if there is no session and party input
       disable("name_input")
       
+      # disable downloads 
+      disable("age_plot_download")
+      disable("term_length_plot_download")
+      
     } else {
       
+      # enable name input if there is session and/or party input
       enable("name_input")
+      
+      # enable downloads 
+      enable("age_plot_download")
+      enable("term_length_plot_download")
       
     }
     
