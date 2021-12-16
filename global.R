@@ -42,14 +42,11 @@ btw17_wahlkreisnamen <- read_csv2(
 
 # party_logo_path <- here::here("test_leaflet_shiny/party_logos")
 
-portrait_de <- get_portrait("deu")
-political_de <- get_political("deu")
-
-session_list <- political_de %>% 
+session_list <- deu_political %>% 
   distinct(session) %>% 
   pull
 
-party_list <- political_de %>% 
+party_list <- deu_political %>% 
   distinct(party) %>% 
   pull
 
@@ -57,7 +54,7 @@ party_list <- political_de %>%
 #   left_join(portrait_de) %>%
 #   left_join(political_de) 
 
-dominant_party_de <- get_political("deu") %>%
+dominant_party_de <- deu_political %>%
   group_by(pageid, party) %>%
   count %>%
   group_by(pageid) %>%
@@ -71,6 +68,21 @@ dominant_party_de <- get_political("deu") %>%
   ) %>%
   group_by(pageid) %>%
   filter(session_start == min(session_start))
+
+term_length_de <- deu_political %>% 
+  left_join(deu_core) %>% 
+  group_by(pageid, name) %>% 
+  summarise(
+    min_session_start = min(session_start),
+    max_session_start = max(session_start)
+  ) %>% 
+  ungroup %>% 
+  mutate(
+    term_length = time_length(
+      difftime(max_session_start, min_session_start), 
+      "years"
+      ) %>% round(3)
+  ) 
 
 core_de <- get_core("deu") %>%
   left_join(portrait_de) %>%
@@ -118,6 +130,7 @@ core_de <- get_core("deu") %>%
   #          birth,
   #          death) %>%
   left_join(dominant_party_de) %>%
+  left_join(term_length_de) %>% 
   arrange(session_start) %>%
   distinct(pageid, .keep_all = TRUE) %>%
   drop_na(constituency) %>%

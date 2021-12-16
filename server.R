@@ -171,7 +171,8 @@ server <- function(input, output, session) {
                       label = paste0("Age ", 
                                      name_mp(),
                                      ": ", 
-                                     as.character(round(age_mp())))
+                                     as.character(round(age_mp())),
+                                     " years")
                       ), 
                   angle = 90,
                   vjust = -0.5,
@@ -196,14 +197,52 @@ server <- function(input, output, session) {
   })
   
   # Session plot ------------------------------------------------------------
-  # Session MP
-  session_mp <- reactive(
+  # Term Length MP
+  term_length_mp <- reactive(
     coord_mp() %>% 
-      pull(session)
+      pull(term_length)
   )
   
   session_plot <- reactive({
-    ggplot()
+    
+    # Plot without highlight
+    if (input$name_input == "") {
+      ggplot(reactive_df(), aes(x = term_length)) +
+        stat_slab(alpha = 0.5, justification = 0) +
+        geom_boxplot(width = 0.1) +
+        theme_lgl() +
+        labs(title = "Total Term of Office",
+             subtitle = "Histogram",
+             x = "", 
+             y = "")
+      
+      # Highlight MP with geom_vline()
+    } else {
+      ggplot(reactive_df(), aes(x = term_length)) +
+        stat_slab(alpha = 0.5, justification = 0) +
+        geom_boxplot(width = 0.1) +
+        theme_lgl() +
+        labs(title = "Total Term of Office",
+             subtitle = paste0("Histogram | MP: ", name_mp()),
+             x = "", 
+             y = "") +
+        geom_vline(xintercept = term_length_mp(), 
+                   alpha = 0.5,
+                   color = "black") + 
+        geom_text(aes(x = term_length_mp(), 
+                      y = 0.5, 
+                      label = paste0("Total Term of Office ", 
+                                     name_mp(),
+                                     ": ", 
+                                     as.character(round(term_length_mp())),
+                                     " years")
+        ), 
+        angle = 90,
+        vjust = -0.5,
+        family = "Corbel",
+        color = "grey40")
+    }
+    
   })
   
   # Session plot (histogram)
