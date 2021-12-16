@@ -100,13 +100,12 @@ core_de <- get_core("deu") %>%
       party == "DP" ~ "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Logo_Deutsche_Partei.svg/1280px-Logo_Deutsche_Partei.svg.png",
       TRUE ~ NA_character_
     ),
-    age_at_death = if_else(
-      # Just compute age at death when death is higher than birth (logical check)
-      death > birth,
-      # Use lubridate for the difference and round the result
-      time_length(difftime(death, birth), "years") %>% round(3),
-      # If the birth date is larger (more recent) than the death date, an error in the data can be assumed
-      NA_real_
+    age_at_death = case_when(
+      # Compute age at death when death is higher than birth (logical check)
+      death > birth ~ time_length(difftime(death, birth), "years") %>% round(3),
+      # If MP is alive compute difference between birth date and current date
+      is.na(death) ~ time_length(difftime(Sys.Date(), birth), "years") %>% round(3),
+      TRUE ~ NA_real_
     )
   ) %>%
   # distinct(pageid,
