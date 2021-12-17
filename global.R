@@ -15,7 +15,6 @@ library(ggthemes)
 library(ggdist)
 library(partycoloR)
 
-
 # Constants used throughout code  ----------------------------------------
 
   # regex statement to translate constituency name/WKR_NAME to join key
