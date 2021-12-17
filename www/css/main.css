@@ -326,6 +326,11 @@ hr {
     height: 0;
 }
 
+.control-labe{
+    font-size: 16rem;
+    font-family "corbel";
+}
+
 
 /* ------------------------------------------------------------------- 
  * ## Lists
@@ -632,6 +637,7 @@ select {
     transition: all 0.3s ease-in-out;
 }
 
+
 .cl-custom-select {
     position: relative;
     padding: 0;
@@ -788,8 +794,8 @@ input[type="submit"],
 input[type="reset"],
 input[type="button"] {
     display: inline-block;
-    font-family: "montserrat-medium", sans-serif;
-    font-size: 1.2rem;
+    font-family: "corbel", sans-serif;
+    font-size: 1.5rem;
     text-transform: uppercase;
     letter-spacing: .3rem;
     height: 5.4rem;
@@ -873,11 +879,13 @@ input[type="button"].btn--primary:focus {
 .btn--stroke, button.btn--stroke {
     background: transparent !important;
     border: 0.2rem solid #ffffff;
+    border-radius: 50px;
     color: #ffffff;
 }
 
 .btn--stroke:hover, button.btn--stroke:hover {
     border: 0.2rem solid #000000;
+    border-radius: 50px;
     color: #000000;
 }
 
@@ -1153,9 +1161,9 @@ button::-moz-focus-inner, input::-moz-focus-inner {
     right: 0;
     top: -3.6rem;
     display: block;
-    font-family: "montserrat-regular", sans-serif;
+    font-family: "corbel", sans-serif;
     color: #FFFFFF;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     line-height: 1;
     background: #000000;
     padding: .6rem .6rem;
@@ -1213,7 +1221,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
  * ## display headings
  * ------------------------------------------------------------------- */
 .display-1 {
-    font-family: "montserrat-medium", sans-serif;
+    font-family: "corbel", sans-serif;
     font-size: 7.8rem;
     line-height: 1.25;
     color: #000000;
@@ -1225,7 +1233,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
 }
 
 .display-2 {
-    font-family: "montserrat-medium", sans-serif;
+    font-family: "corbel", sans-serif;
     font-size: 5.2rem;
     line-height: 1.255;
     color: #000000;
@@ -1241,7 +1249,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
 }
 
 .subhead {
-    font-family: "montserrat-bold", sans-serif;
+    font-family: "Corbel", sans-serif;
     font-size: 1.7rem;
     line-height: 1.333;
     text-transform: uppercase;
@@ -1506,11 +1514,11 @@ button::-moz-focus-inner, input::-moz-focus-inner {
 }
 
 .header-nav h3 {
-    font-family: "montserrat-semibold", sans-serif;
-    font-size: 11px;
+    font-family: "corbel-bold", sans-serif;
+    font-size: 28px;
     line-height: 1.5;
     text-transform: uppercase;
-    letter-spacing: .25rem;
+    letter-spacing: .15rem;
     margin-bottom: 4.8rem;
     margin-top: .9rem;
     color: #ffffff;
@@ -2237,10 +2245,10 @@ html.no-csstransitions .home-content__main {
 }
 
 .stats__count {
-    font-family: "montserrat-bold", sans-serif;
+    font-family: "corbel-bold", sans-serif;
     font-size: 8.4rem;
     line-height: 1;
-    color: #FFFFFF;
+    color: #000000 !important;
     position: relative;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2248,7 +2256,7 @@ html.no-csstransitions .home-content__main {
 }
 
 .stats h5 {
-    font-family: "montserrat-semibold", sans-serif;
+    font-family: "corbel-bold", sans-serif;
     margin-top: 1.8rem;
     color: #000000;
     font-size: 1.8rem;
@@ -2369,8 +2377,8 @@ html.no-csstransitions .home-content__main {
 .s-services {
     padding-top: 16.2rem;
     padding-bottom: 13.2rem;
-    background-color: #FFFFFF;
-    color: #757575;
+    background-color: #000000;
+    color: #FFFFFF;
     position: relative;
 }
 
@@ -2730,7 +2738,7 @@ html.no-csstransitions .home-content__main {
  * ------------------------------------------------------------------- */
 .s-clients {
     padding-top: 16.2rem;
-    padding-bottom: 16.8rem;
+    padding-bottom: 0rem;
     background-color: #e6e6e6;
     color: #757575;
     position: relative;

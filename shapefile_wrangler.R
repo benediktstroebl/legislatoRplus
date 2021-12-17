@@ -41,13 +41,14 @@ joinShapefileWithDeuCore <-
                     font-size: 12px;
                     width: 200px;
                     margin-left:auto; 
-                    margin-right:auto
+                    margin-right:auto;
+                    margin-top: 30px;
                 }
                 
                 tr td {
                   padding: 0;
-                  margin-top: 3px;
-                  margin-bottom: 3px;
+                  margin-top: 10px;
+                  margin-bottom: 10px;
                   height: auto;
                 }
                 

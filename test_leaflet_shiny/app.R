@@ -1,11 +1,3 @@
-r_colors <- rgb(t(col2rgb(colors()) / 255))
-names(r_colors) <- colors()
-
-mp_list <- core_de %>%
-  filter(session == 19) %>% 
-  slice(1:100) %>%
-  distinct(name) %>%
-  pull
 
 ui <- shiny::htmlTemplate(
   # Index Page
@@ -24,12 +16,12 @@ server <- function(input, output, session) {
   # Select right SpatialPolygon data for leaflet based on leg. session
   wahlkreis_ll <- reactive({
     # case_when(
-    #   input$session_input == "BTW2021 | LP20" ~ btw21_wahlkreise_spdf,
-    #   input$session_input == "BTW2017 | LP19" ~ btw17_wahlkreise_spdf,
-    #   input$session_input == "BTW2013 | LP18" ~ btw13_wahlkreise_spdf,
-    #   input$session_input == "BTW2009 | LP17" ~ btw09_wahlkreise_spdf,
-    #   input$session_input == "BTW2005 | LP16" ~ btw05_wahlkreise_spdf,
-    #   input$session_input == "BTW2002 | LP15" ~ btw02_wahlkreise_spdf
+    #   input$session_input == 20 ~ btw21_wahlkreise_spdf,
+    #   input$session_input == 19 ~ btw17_wahlkreise_spdf,
+    #   input$session_input == 18 ~ btw13_wahlkreise_spdf,
+    #   input$session_input == 17 ~ btw09_wahlkreise_spdf,
+    #   input$session_input == 16 ~ btw05_wahlkreise_spdf,
+    #   input$session_input == 15 ~ btw02_wahlkreise_spdf
     # )
     
     btw17_wahlkreise_spdf
