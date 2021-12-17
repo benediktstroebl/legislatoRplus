@@ -202,6 +202,14 @@ paste0(
 
 ## Functionality
 
+- SHOW CORE ELEMENTS: MAP, AGE PLOT, TERM LENGTH PLOT
+
+- SHOW UI FEATUERS: SELECT INPUT AND REACTIVE UPDATED SELECT INPUT
+
+- SHOW UI FEATURES: EXPORT OPTIONS
+
+- SHOW HOW WEBSITE/DASHBOARD IS INTRODUCED IN A VERY APPROACHABLE WAY
+
 ---
 
 # Scalability
@@ -217,6 +225,10 @@ A useful and accessible dashboard should increase the vision of its underlying d
 The principle of *modularity* is directly implied theoretically and especially practically in the notion of scalability. In practical terms, modularity refers to a system that enables new features to be added in a very straightforward and inherent manner. For `legislatoR+` this would translate to adding visual and analytical elements of the `legislatoR` package that are easy to implement in the given dashboard structure. The current dashboard is mainly set up by 3 visual elements: A comprehensive choropleth map and two plots that communicate descriptive statistics. Adding a new map would be rather complicated and implying a lot of obstacles, while modularly adding new elements, for instance new information for the MPs and more legislative periods, would be a rather straightforward approach. The two existing plots could also be easily expanded or complemented by similar visual features that are based on the same level of inputs in `Shiny's` reactivity context.
 
 # Obstacles and Problems
+
+- ADD IMAGES OF CHANGING CONSTITUENCIES
+
+- ADD IMAGES / SHOW SCREENSHOTS OF MERGE PROBLEMS DUE TO DIFFERENT CONSTITUENCY NAMES (MISTAKES)
 
 ---
 
