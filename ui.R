@@ -10,58 +10,47 @@ excelDownloadButton <- function(outputId, label = "Download") {
 }
 
 # ui
-ui <- fluidPage(
+ui <- shiny::htmlTemplate(
+  # Index Page
+  "www/index.html",
   
-  # use JS features
-  useShinyjs(),
+  # Total MP count
+  nr_of_mps = textOutput("nr_of_mps", inline = T),
   
+  total_nr_of_mps = textOutput("total_nr_of_mps", inline = T),
   
-  fluidRow(
-    # Inputs
-    column(
-      8,
-      # Session input
-      selectInput("session_input", "Select Legislative Sessions", session_list, multiple = TRUE),
-      
-      # Party input
-      selectInput("party_input", "Select Parties", party_list, multiple = TRUE),
-      
-      # Name input
-      selectInput("name_input", "MP Name", mp_list, selected = FALSE, multiple = FALSE)
-    ),
-    # Downloads
-    column(
-      4,
-      div(style = "text-align: center;", 
-          plotDownloadButton("age_plot_download", label = "Age Plot")
-      ),
-      br(),
-      div(style = "text-align: center;", 
-          plotDownloadButton("term_length_plot_download", label = "Term Length Plot")
-      )
-    )
-  ),
-    
+  # Number of sessions supported
+  nr_of_sessions = textOutput("nr_of_sessions", inline = T),
+  
+  total_nr_of_sessions = textOutput("total_nr_of_sessions", inline = T),
+  
+  # Number of countries supported
+  nr_of_countries = textOutput("nr_of_countries", inline = T),
+  
+  # Session input
+  session_selector = selectInput("session_input", "Select Legislative Sessions", session_list, multiple = TRUE),
+  
+  # Party input
+  party_selector = selectInput("party_input", "Select Parties", party_list, multiple = TRUE),
+  
+  # Name input
+  name_selector = selectInput("name_input", "MP Name", mp_list, selected = FALSE, multiple = FALSE),
+
+  # Downloads
+  age_plot_download_button = plotDownloadButton("age_plot_download", label = "Age Plot"),
+
+  term_plot_download_button = plotDownloadButton("term_length_plot_download", label = "Term Length Plot"),
+
   # Leaflet map
-  leafletOutput(outputId = "map"),
+  leaflet_map = leafletOutput(outputId = "map", height = "650"),
   
-  br(),
-  
-  fluidRow(
-    column(
-      6,
-      plotOutput("age_plot_final") %>% 
-        withSpinner(color = "black")
-    ),
-    column(
-      6,
-      plotOutput("session_plot_final") %>% 
-        withSpinner(color = "black")
-      # verbatimTextOutput("debug_df")
-      # verbatimTextOutput("debug_radar_plot_df"),
-      # plotOutput("radar_plot_final") %>% 
-        # withSpinner(color = "black")
-    )
-  )
-  
+  age_plot = plotOutput("age_plot_final") %>% 
+    withSpinner(color = "black"),
+
+  session_plot = plotOutput("session_plot_final") %>% 
+    withSpinner(color = "black")
 )
+
+
+
+

@@ -1,44 +1,70 @@
-party_logo_path <- here::here("test_leaflet_shiny/party_logos")
-
+# legislatoR tables ---------------------------------------------------------
 # Political
-deu_political <- get_political(legislature = "deu")
+deu_political <- get_political(legislature = "deu") %>% distinct()
 
 # Core
-deu_core <- get_core(legislature = "deu")
+deu_core <- get_core(legislature = "deu") %>% distinct()
 
 # Portraits
-deu_portrait <- get_portrait(legislature = "deu")
+deu_portrait <- get_portrait(legislature = "deu") %>% distinct()
 
-# If there is a MP with multiple party affiliations; 
-dominant_party_de <- deu_political %>%
-  group_by(pageid, party) %>%
-  count %>%
-  group_by(pageid) %>%
-  filter(n == max(n)) %>%
-  left_join(
-    get_political("deu") %>%
-      group_by(pageid) %>%
-      filter(session_start == min(session_start)) %>%
-      arrange(session_start) %>%
-      distinct(pageid, .keep_all = T)
-  ) %>%
-  group_by(pageid) %>%
-  filter(session_start == min(session_start))
+
+# Intermediate Tables for joining -------------------------------------------
+
+# Term length by MP and highest session MP has served in
+term_length_de <- deu_political %>% 
+  left_join(deu_core) %>% 
+  group_by(pageid, name) %>% 
+  summarise(
+    min_session_start = min(session_start),
+    max_session_end = max(session_end),
+    min_session = min(session),
+    max_session = max(session)
+  ) %>% 
+  ungroup %>% 
+  mutate(
+    term_length = time_length(difftime(max_session_end, min_session_start), "years") %>% round(3)
+  ) %>% 
+  select(-name)
+
+# Dominant party (CURRENTLY NOT IN USE)
+# dominant_party_de <- deu_political %>%
+#   group_by(pageid, party) %>%
+#   dplyr::summarise(n = n()) %>% 
+#   group_by(pageid) %>%
+#   dplyr::filter(n == max(n)) %>%
+#   left_join(
+#     deu_political %>%
+#       group_by(pageid) %>%
+#       filter(session_start == min(session_start)) %>%
+#       arrange(session_start) %>%
+#       distinct(pageid, .keep_all = T)
+#   ) %>%
+#   group_by(pageid) %>%
+#   dplyr::filter(session_start == min(session_start))
 
 # Wikipedia traffic
 deu_traffic <- get_traffic("deu")
 
 
 # Join legislatoR deu_political with wahlkreis_data
-deu_political_final <- deu_political %>% 
+deu_political_with_wkr_data <- deu_political %>% 
+  # Some manual correction of legislatoR data
+  # LALE AKGÜN was not in Köln III during session 15 but Köln II
+  mutate(
+    constituency = ifelse(pageid == "237781" & session == 15, "Köln II", constituency),
+  ) %>% 
   mutate(constituency_join = str_replace_all(constituency, char_to_replace_for_join, "") %>% str_to_lower()) %>% 
   left_join(kerg_full, by = c("constituency_join" = "WKR_NAME_join",
                               "session" = "session"))
 
-# CORE DE
+
+# COMBINE TABLES TO MAIN TABLE: core_de ------------------------------------
 core_de <- deu_core %>%
   left_join(deu_portrait) %>%
-  left_join(deu_political_final, by = "pageid") %>%
+  # left_join(dominant_party_de) %>%
+  left_join(term_length_de) %>%
+  left_join(deu_political_with_wkr_data, by = "pageid") %>%
   filter(session >= 15) %>% 
   mutate(
     WKR_NR = as.integer(WKR_NR),
@@ -82,14 +108,3 @@ core_de <- deu_core %>%
   
   
   
-  
-  
-  
-  # btw17_wahlkreisnamen <- read_csv2(
-  #   "https://www.bundeswahlleiter.de/dam/jcr/90ae9719-97bb-43f9-8e26-3e9ef0f18609/btw17_wahlkreisnamen.csv",
-  #   locale = locale("de", encoding = "latin1")
-  # ) %>%
-  # slice(-c(1:4)) %>%
-  # row_to_names(1) %>%
-  # mutate(wkr_merge = str_replace_all(WKR_NAME, "-|–|[:blank:]", "") %>% str_to_lower())
-

@@ -1,12 +1,42 @@
 # server
 server <- function(input, output, session) {
   
+  # assign constants for overview section
+  output$nr_of_mps <- renderText({
+    core_de %>% 
+      distinct(pageid) %>% 
+      nrow()
+  })
+  
+  output$total_nr_of_mps <- renderText({
+    deu_core %>% 
+      distinct(pageid) %>% 
+      nrow()
+  })
+  
+  output$nr_of_sessions <- renderText({
+    core_de %>% 
+      distinct(session) %>% 
+      nrow()
+  })
+  
+  output$total_nr_of_sessions <- renderText({
+    deu_political %>% 
+      distinct(session) %>% 
+      nrow()
+  })
+  
+  output$nr_of_countries <- renderText({
+    "1"
+  })
+  
+  
   # Reactive name list based on varying inputs
   name_list_reactive <- reactive({
     
     if (!is.null(input$session_input) & is.null(input$party_input)) {
       
-      pol_core_de %>%
+      core_de %>%
         filter(
           session %in% input$session_input
         ) %>%
@@ -16,7 +46,7 @@ server <- function(input, output, session) {
       
     } else if (is.null(input$session_input) & !is.null(input$party_input)) {
       
-      pol_core_de %>%
+      core_de %>%
         filter(
           party %in% input$party_input
         ) %>%
@@ -26,7 +56,7 @@ server <- function(input, output, session) {
       
     } else {
       
-      pol_core_de %>%
+      core_de %>%
         filter(
           session %in% input$session_input,
           party %in% input$party_input
@@ -77,7 +107,7 @@ server <- function(input, output, session) {
   
   # Reactive data frame based on MP name input
   mp_df <- reactive(
-    pol_core_de %>%
+    core_de %>%
       filter(name == input$name_input)
   )
   
@@ -85,15 +115,15 @@ server <- function(input, output, session) {
   reactive_df <- reactive({
     ## 'session_input'
     if (!is.null(input$session_input) & is.null(input$party_input)) {
-      pol_core_de %>% 
+      core_de %>% 
         filter(session %in% input$session_input)
     ## 'party_input'
     } else if (is.null(input$session_input) & !is.null(input$party_input)) {
-      pol_core_de %>% 
+      core_de %>% 
         filter(party %in% input$party_input)
     ## both
     } else {
-      pol_core_de %>% 
+      core_de %>% 
         filter(session %in% input$session_input,
                party %in% input$party_input)
     }
@@ -111,7 +141,7 @@ server <- function(input, output, session) {
   # Age MP
   age_mp <- reactive(
     mp_df() %>% 
-      distinct(age_at_death) %>% 
+      distinct(age) %>% 
       pull
   )
 
@@ -120,7 +150,7 @@ server <- function(input, output, session) {
     
     # Plot without highlight
     if (input$name_input == "") {
-      ggplot(reactive_df(), aes(x = age_at_death)) +
+      ggplot(reactive_df(), aes(x = age)) +
         stat_slab(alpha = 0.5, justification = 0) +
         geom_boxplot(width = 0.1) +
         theme_lgl() +
@@ -131,7 +161,7 @@ server <- function(input, output, session) {
       
     # Highlight MP with geom_vline()
     } else {
-      ggplot(reactive_df(), aes(x = age_at_death)) +
+      ggplot(reactive_df(), aes(x = age)) +
         stat_slab(alpha = 0.5, justification = 0) +
         geom_boxplot(width = 0.1) +
         theme_lgl() +
@@ -306,29 +336,128 @@ server <- function(input, output, session) {
   
 
   # Map ---------------------------------------------------------------------
-  output$mymap <- renderLeaflet({
+  
+  # Select right SpatialPolygon data for leaflet based on leg. session
+  wahlkreis_ll <- reactive({
+    btw_spdf <- list(
+      "20" = btw21_wahlkreise_spdf,
+      "19" = btw17_wahlkreise_spdf,
+      "18" = btw13_wahlkreise_spdf,
+      "17" = btw09_wahlkreise_spdf,
+      "16" = btw05_wahlkreise_spdf,
+      "15" = btw02_wahlkreise_spdf
+    )
+    
+    # Select the right SpatialPolygon data for the selected session
+    if (length(input$session_input) > 0){
+      selected_spdf <- btw_spdf[[max(input$session_input)]]
+      
+      #return(btw_spdf[[max(input$session_input)]])
+    } else {
+      
+      selected_spdf <- btw_spdf[[as.character(max(session_list))]]
+      #return(btw_spdf[[as.character(max(session_list))]])
+    }
+    
+    print(input$name_input == "")
+
+    # Assign color scheme depending on selectors
+    if (input$name_input != "" & length(input$party_input) == 0){
+        print("1")
+        selected_spdf@data <- selected_spdf@data %>%
+          mutate(
+               party_color = case_when(name == input$name_input ~
+                                         party_color,
+                                       TRUE ~ "#d9d9d9"),
+               fill_opacity = case_when(name == input$name_input ~
+                                          0.7,
+                                        TRUE ~ 0.4))
+    } else if (length(input$party_input) > 0 & input$name_input == "") {
+        print("2")
+      
+        selected_spdf@data <- selected_spdf@data %>%
+          mutate(
+               party_color = case_when(party %in% input$party_input ~
+                                         party_color,
+                                       TRUE ~ "#d9d9d9"),
+               fill_opacity = case_when(party %in% input$party_input ~
+                                          0.7,
+                                        TRUE ~ 0.4))
+    } else if (length(input$party_input) > 0 & input$name_input != "") {
+      print("3")
+      
+      selected_spdf@data <- selected_spdf@data %>%
+        mutate(
+          party_color = case_when(party %in% input$party_input ~
+                                    party_color,
+                                  TRUE ~ "#d9d9d9"),
+          fill_opacity = case_when(party %in% input$party_input & name != input$name_input ~
+                                     0.3,
+                                   party %in% input$party_input & name == input$name_input ~
+                                     0.8,
+                                   TRUE ~ 0.3)
+          )
+    } else {
+      selected_spdf@data <- selected_spdf@data %>%
+        mutate(
+          fill_opacity = 0.5)
+    }
+
+      
+      
+      # case_when(
+      #     # If MP is selected, highlight MPs constituency
+      #     !is.null(input$name_input) ~
+      #       mutate(selected_spdf@data,
+      #              party_color = case_when(input$name_input == name ~ 
+      #                                        party_color,
+      #                                      TRUE ~ "#636363")),
+      #     # If party, but no MP is selected, highlight party constituencies
+      #     !is.null(input$party_input) & is.null(input$name_input) ~
+      #       mutate(selected_spdf@data,
+      #              party_color = case_when(input$party_input == party ~ 
+      #                                        party_color,
+      #                                      TRUE ~ "#636363")),
+      #     TRUE ~ selected_spdf@data
+      #       
+      #   )
+    
+    return(selected_spdf)
+    
+  })
+  
+  
+  output$map <- renderLeaflet({
     # Plot on leaflet map
     leaflet() %>%
       addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
       addPolygons(
-        data = btw21_wahlkreise_spdf,
+        data = wahlkreis_ll(),
         stroke = TRUE,
         weight = 1,
-        color = "#968C83",
-        fillColor = '#968C83',
-        fillOpacity = 0.5,
+        color = ~ party_color,
+        fillColor = ~ party_color,
+        fillOpacity = ~ fill_opacity,
         smoothFactor = 0.5,
-        popup = ~ WKR_NAME,
+        layerId = ~ name,
+        popup = ~ popup_image,
         highlightOptions = highlightOptions(
           color = '#636363',
           fillColor = '#636363',
           opacity = 1,
           weight = 2,
-          fillOpacity = 0.5,
+          fillOpacity = ~ fill_opacity,
           bringToFront = TRUE,
           sendToBack = TRUE
         )
       )
+  })
+  
+  observe({
+    event <- input$map_shape_click
+    if (is.null(event))
+      return()
+    updateSelectInput(session, "name_input", selected = event$id)
   })
   
 
