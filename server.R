@@ -5,13 +5,14 @@ server <- function(input, output, session) {
   output$nr_of_mps <- renderText({
     core_de %>% 
       distinct(pageid) %>% 
-      nrow()
+      nrow() 
   })
   
   output$total_nr_of_mps <- renderText({
     deu_core %>% 
       distinct(pageid) %>% 
-      nrow()
+      nrow() %>% 
+      as.character()
   })
   
   output$nr_of_sessions <- renderText({
@@ -23,7 +24,7 @@ server <- function(input, output, session) {
   output$total_nr_of_sessions <- renderText({
     deu_political %>% 
       distinct(session) %>% 
-      nrow()
+      nrow() 
   })
   
   output$nr_of_countries <- renderText({
