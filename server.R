@@ -353,11 +353,8 @@ server <- function(input, output, session) {
     if (length(input$session_input) > 0){
       selected_spdf <- btw_spdf[[max(input$session_input)]]
       
-      #return(btw_spdf[[max(input$session_input)]])
     } else {
-      
       selected_spdf <- btw_spdf[[as.character(max(session_list))]]
-      #return(btw_spdf[[as.character(max(session_list))]])
     }
     
     print(input$name_input == "")
@@ -374,6 +371,7 @@ server <- function(input, output, session) {
                                           0.7,
                                         TRUE ~ 0.4))
     } else if (length(input$party_input) > 0 & input$name_input == "") {
+      # If party, but no MP is selected, highlight party constituencies
         print("2")
       
         selected_spdf@data <- selected_spdf@data %>%
@@ -403,25 +401,30 @@ server <- function(input, output, session) {
         mutate(
           fill_opacity = 0.5)
     }
+    
+    # Add state border if selected MP is elected via Landeslist
+    if (str_detect(input$name_input, "Landesliste")) {
+      # Find name of state that this MP was running in for the latest selected session
+      land_name <- core_de %>% 
+        filter(name == input$name_input) %>% 
+        distinct(constituency2) %>% 
+        pull
+      
+      # create new spdf with aggregated polygon for land border
+      land_border_spdf <- aggregate(selected_spdf, by = "LAND_NAME") %>% subset(LAND_NAME == land_name)
+      # assign NA columns to be able to bind with full dataframe again
+      land_border_spdf@data[colnames(btw02_wahlkreise_spdf@data)] <- NA
+      # assign values to formatting relevant columns
+      land_border_spdf@data <-land_border_spdf@data %>% 
+        mutate(
+          fill_opacity = 0,
+          party_color = "#000000",
+        )
+      
+      # Bind additional polygon with state border to spdf for selected session
+      selected_spdf <- rbind(land_border_spdf, selected_spdf)
+    }
 
-      
-      
-      # case_when(
-      #     # If MP is selected, highlight MPs constituency
-      #     !is.null(input$name_input) ~
-      #       mutate(selected_spdf@data,
-      #              party_color = case_when(input$name_input == name ~ 
-      #                                        party_color,
-      #                                      TRUE ~ "#636363")),
-      #     # If party, but no MP is selected, highlight party constituencies
-      #     !is.null(input$party_input) & is.null(input$name_input) ~
-      #       mutate(selected_spdf@data,
-      #              party_color = case_when(input$party_input == party ~ 
-      #                                        party_color,
-      #                                      TRUE ~ "#636363")),
-      #     TRUE ~ selected_spdf@data
-      #       
-      #   )
     
     return(selected_spdf)
     
@@ -454,12 +457,13 @@ server <- function(input, output, session) {
       )
   })
   
-  observe({
-    event <- input$map_shape_click
-    if (is.null(event))
-      return()
-    updateSelectInput(session, "name_input", selected = event$id)
-  })
+  # Observe event for filtering with clicking in map
+  # observe({
+  #   event <- input$map_shape_click
+  #   if (is.null(event))
+  #     return()
+  #   updateSelectInput(session, "name_input", selected = event$id)
+  # })
   
 
   # Download section --------------------------------------------------------

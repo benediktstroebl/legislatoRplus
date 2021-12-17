@@ -104,7 +104,9 @@ core_de <- deu_core %>%
       is.na(death) ~ time_length(difftime(Sys.Date(), birth), "years") %>% ceiling(),
       TRUE ~ NA_real_
     )
-  )
+  ) %>% 
+  # Mutate name column to indicate whether MP was elected via Landesliste or direct
+  mutate(name = if_else(constituency == "Landesliste", paste0(name, " (Landesliste)"), name), name)
   
   
   

@@ -57,8 +57,9 @@
                 
                 <ul class="header-nav__list">
                     <li class="current"><a class="smoothscroll"  href="#home" title="home">Home</a></li>
-                    <li><a class="smoothscroll"  href="#about" title="about">Introduction</a></li>
-                    <li><a class="smoothscroll"  href="#works" title="works">Trip Maps</a></li>
+                    <li><a class="smoothscroll"  href="#about" title="about">Overview</a></li>
+                    <li><a class="smoothscroll"  href="#services" title="about">Explore the Data</a></li>
+                    <li><a class="smoothscroll"  href="#project" title="project">About legislatoR</a></li>
                 </ul>
 
     
@@ -108,8 +109,8 @@
                 
 
                 <div class="home-content__buttons">
-                    <a href="#about" class="smoothscroll btn btn--stroke">
-                        View the app
+                    <a href="#services" class="smoothscroll btn btn--stroke">
+                        Explore
                     </a>
                 </div>
 
@@ -205,11 +206,22 @@
         
         <div class="row services-list block-1-2 block-tab-full" style="margin-bottom: 50px">
             <div class="col-block">
-                {{ age_plot }}
+                <div>
+                    {{ age_plot }}
+                </div>
+                <div class="download-button-div">
+                    {{age_plot_download_button}}
+                </div>
+                
             </div>
 
             <div class="col-block">
-                {{ session_plot }}
+                <div>
+                    {{ session_plot }}
+                </div>
+                <div class="download-button-div">
+                    {{term_plot_download_button}}
+                </div>
             </div>
         </div>
         
@@ -221,7 +233,8 @@
       
     </section> 
     <!-- end s-map -->
-    <section id="vivek" class="s-services">
+    
+    <section id="project" class="s-services">
         <div class="row section-header aos-init aos-animate" data-aos="fade-up">
             <div class="col-full">
                 <h3 class="subhead">About the project</h3>
