@@ -3,8 +3,9 @@ theme_lgl <- function() {
   
   # font
   font <- "Corbel"
+  
   # base theme
-  ggthemes::theme_few() %+replace%
+  theme_minimal() %+replace%
     
     theme(
       
@@ -15,32 +16,32 @@ theme_lgl <- function() {
       # plot text properties
       plot.title = element_text(            
         family = font,            
-        size = 18,                        
+        size = 20,                        
         hjust = 0.5,
         margin = margin(0, 0, 5, 0)),
       
       plot.subtitle = element_text(          
         family = font,            
-        size = 15,
+        size = 16,
         margin = margin(0, 0, 5, 0)),               
       
       plot.caption = element_text(
         family = font,            
-        size = 10,                 
+        size = 12,                 
         hjust = 1,
         margin = margin(5, 0, 0, 0)),
       
       axis.title = element_text(            
         family = font,            
-        size = 10),               
+        size = 14),               
       
       axis.text.x = element_text(   
         family = font, 
-        size = 8), 
+        size = 12), 
       
       axis.text.y = element_text(   
         family = font, 
-        size = 8)
+        size = 12)
       
     )
   
