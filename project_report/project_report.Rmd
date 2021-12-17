@@ -20,13 +20,19 @@ knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
 library(tidyverse)
 library(legislatoR)
 library(cranlogs)
+library(kableExtra)
+library(lubridate)
 ```
 
 # `legislatoR+`
 
 ## Executive Summary
 
-text text text
+`legislatoR+` is a dashboard project from Benedikt Ströbl and Lukas Warode with the goal to provide an accessible and useful visual tool for the existing `legislatoR` R API. `legislatoR` itself is based on *The Comparative Legislators Database* (Göbel and Munzert, 2021), a far-reaching political science data project that provides both comprehensive information for over 45,000 politicians from ten countries while also including linking possibilities to other research databases within the political science context.
+
+`legislatoR+` provides (in the preliminary version) several options of visual communication, including a constituency-based map and 2 descriptive plots. All graphical elements are based on `Shiny's` reactive infrastructure.
+
+For reasons of accessibility and simplicity that comes with avoiding large data handling issues -- the scope of available data differs across the ten countries -- the preliminary version for the final project is based on a German sample starting with the 15th legislative period (*Bundestagswahl 2002*).
 
 ## Statement of Contribution
 
@@ -36,33 +42,137 @@ In the advanced and practical stages, a certain division of labor crystallized. 
 
 In detail, the division of work was as follows:
 
-- __Benedikt Ströbl__ mainly took care of the configuration of the HTML template and handled the different map data formats. He also created the visual map base.
+- __Benedikt Ströbl__ mainly took care of the configuration of the HTML template and handled the different map data formats. He also created the visual map base with special emphasis on the constituencies and the implied data matching and wrangling tasks.
 
-- __Lukas Warode__ was mainly involved in setting up the Shiny backend and did a lot of the practical data manipulation inside and outside the `Shiny` reactivity. He also worked on the `ggplot2` foundation of descriptive statistics.
+- __Lukas Warode__ was mainly involved in setting up the Shiny backend and did a lot of the practical data manipulation inside and outside the `Shiny` reactivity. He also worked on the `ggplot2` foundation of descriptive statistics and configured the visual and written outline of the `R Markdown` report.
+
+<br/>
+
+---
 
 # Goal and Motivation
 
-# …
+Many research projects in academia suffer from lacking visibility, even though their scope and findings could be relevant and appealing to a broader audience. The same is true for scientific articles in general, however, especially data-driven research projects exhibit great potentials for further research ideas and serve as a crucial foundation in the domain of genuine knowledge generation.
+
+In this context, setting up a proper and suitable dashboard should function as an instrument of appealing and barrier-free visual communication. The goal of the dashboard -- `legislatoR+` -- is to reach both an academic and non-academic audience while generally trying to increase the visibility and accessibility of *The Comparative Legislators Database*, or rather the `legislatoR` API.
+
+## State of the API `legislatoR`
+
+<div class = "row">
+<div class = "col-md-9">
+The package `legislatoR` is available on CRAN since April 2020. The download dynamics of the package are shown in **Figure 1**. It is hard to observe a clear pattern or direction within the download behavior, however, in the year 2020, there is a small downward trend observable. Since fall 2021, the download pattern is showing an increase again, while showing some days with surpassingly high download numbers.
+
+The table on the the right side is indicating the quarterly download numbers. The quarterly downloads range from 920 (last quarter 2020) to 1258 (last quarter 2021). The highest number of downloads in the ongoing quarter could be an indicator that the package or rather the project itself is facing an increased importance and visibility.
+</div>
+
+<div class = "col-md-3">
+<img src="https://raw.githubusercontent.com/saschagobel/legislatoR/master/images/sticker.jpg" style="position:right" width="200"/>
+</div>
+</div>
+
+</br>
 
 ```{r}
 source(here::here("theme_lgl.R"))
 
-cran_downloads(
+downloads_lgl <- cran_downloads(
   packages = "legislatoR",
   # Date of package documentation
   from = as.Date("2020-04-24"),
   to = Sys.Date()
-) %>% 
+)
+```
+
+<div style="text-align: right"> **Figure 1: Downloads of `legislatoR`** </div>
+<div class = "row">
+<div class = "col-md-6">
+```{r}
+downloads_lgl %>% 
   ggplot(aes(x = date, y = count)) + 
   geom_point(alpha = 0.5) +
   geom_smooth() + 
   theme_lgl() +
-  labs(title = "Downloads of legislatoR (CRAN)",
+  labs(title = "Daily Downloads of legislatoR (CRAN)",
        x = "Date",
        y = "Download (N)") + 
   scale_x_date(breaks = "3 months", date_labels = "%B %Y")
 ```
+</div>
 
+<div class = "col-md-6">
+```{r}
+downloads_lgl %>% 
+  mutate(year = year(date),
+         quarter = quarter(date)) %>% 
+  group_by(year, quarter) %>% 
+  summarise(download_month = sum(count)) %>% 
+  ungroup %>% 
+  rename("Year" = 1, "Quarter" = 2, "Download (N)" = 3) %>% 
+  kbl() %>% 
+  kable_paper()
+```
+</div>
+</div>
+
+---
+
+# Project Infrastructure
+
+## Used Data
+
+The package `legislatoR` provides nine individual tables that can be both used individually and combined after merging with the respective key variables. For the scope of this project, the tables **Core**, **Political**, **Social** and **Portraits** are used, which are highlighted in **Figure 2**. All four tables can be merged using the **pageid** key variable.
+
+The respective tables are used for different purposes within `legislatoR+'s` scope:
+
+- **Core** serves as the main table and provides sociodemographic information on legislators. For the scope of `legislatoR+`, the variables `name`, `birth` and `death` are very important. The last two are used in order to compute the individual age of legislators.
+
+- **Political** provides relevant information of the genuine political activity of included legislators. The table serves as the essential source of communicated information in the dashboard project. The variable `session` represents the legislative period of the MP (*Member of Parliament*), while `party` indicates the party affiliation of the politician. Both variables play a crucial role for the displayed plots in the dashboard. Furthermore, `constituency` is used to map the MPs per legislative period, while `session_start` and `session_end` serve for computing the maximum term length of individual MPs.
+
+- **Social**: @BENEDIKT
+
+- **Portraits** just includes the variable `image_url` next to the `pageid`. `image_url` provides the URL to the portrait images that are displayed on the respective (English) Wikipedia articles. The portrait images serve as an important visual element within the map of the dashboard and are also representing a crucial recognition value for the audience inside and outside of academia.
+
+<div style="text-align: right"> **Figure 2: Data Tables in Usage** </div>
+<div class = "row">
+<div class = "col-md-6">
+![](https://raw.githubusercontent.com/saschagobel/legislatoR/master/images/data-structure.png)
+</div>
+
+<div class = "col-md-6">
+| Table       | Function            | Description                                                           | Key                |
+| :---------- | :------------------ | :-------------------------------------------------------------------- | :----------------- |  
+| **Core**        | **`get_core()`**        | **Fetches sociodemographic data of legislators**                          | **pageid, wikidataid** |
+| **Political**   | **`get_political()`**   | **Fetches political data of legislators**                                 | **pageid**             |
+| History     | `get_history()`     | Fetches full revision histories of legislators' Wikipedia biographies | pageid             |
+| Traffic     | `get_traffic()`     | Fetches daily user traffic on legislators' Wikipedia biographies      | pageid             |
+| **Social**      | **`get_social()`**      | **Fetches social media handles and website URLs of legislators**          | **wikidataid**         |
+| **Portraits**   | **`get_portrait()`**    | **Fetches portrait urls of legislators**                                  | **pageid**             |
+| Offices     | `get_office()`      | Fetches political and other offices of legislators                    | wikidataid         |
+| Professions | `get_profession()`  | Fetches occupational data of legislators                              | wikidataid         |
+| IDs         | `get_ids()`         | Fetches a range of IDs of legislators                                 | wikidataid         |
+</div>
+</div>
+
+
+<!-- | Country                              | Legislative sessions        | Politicians (unique) | Integrated with    | -->
+<!-- | ------------------------------------ | --------------------------- | -------------------- | ------------------ | -->
+<!-- | Austria (Nationalrat)                | all 27<br /> (1920-2019)    | 1,923                | [ParlSpeech V2](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/L4OAKN) (Rauh/Schwalbach 2020)      | -->
+<!-- | Canada (House of Commons)            | all 43<br /> (1867-2019)    | 4,515                |                    | -->
+<!-- | Czech Republic (Poslanecka Snemovna) | all 8<br /> (1992-2017)     | 1,020                | [ParlSpeech V1](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/E4RSP9) (Rauh et al. 2017)          | -->
+<!-- | France (Assemblée)                   | all 15<br /> (1958-2017)    | 3,933                |                    | -->
+<!-- | ***Germany (Bundestag)***                  | ***all 19<br /> (1949-2017)***    | ***4,075***                | ***[BTVote data](https://dataverse.harvard.edu/dataverse/btvote) (Bergmann et al. 2018),<br /> [ParlSpeech V1](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/E4RSP9) (Rauh et al. 2017),<br /> [Reelection Prospects data](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/EBEDPI) (Stoffel/Sieberer 2017)***   | -->
+<!-- | Ireland (Dail)                       | all 33<br /> (1918-2020)          | 1,408                |	[Database of Parliamentary Speeches in Ireland](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/6MZN76) (Herzog/Mikhaylov 2017)	| -->
+<!-- | Scotland (Parliament)                | all 5<br /> (1999-2016)           | 305                  | [ParlScot](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/EQ9WBE) (Braby/Fraser 2021)      			 | -->
+<!-- | Spain (Congreso de los Diputados)    | all 14<br /> (1979-2019)          | 2634           | [ParlSpeech V2](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/L4OAKN) (Rauh/Schwalbach 2020)      |         -->
+<!-- | United Kingdom (House of Commons)    | all 58<br /> (1801-2019)          | 13,215               | [EggersSpirling data](https://github.com/ArthurSpirling/EggersSpirlingDatabase) (starting from <br /> 38th session, Eggers/Spirling 2014),<br /> [ParlSpeech V1](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/E4RSP9) (Rauh et al. 2017) |  -->
+<!-- | United States (House and Senate)     | all 116<br /> (1789-2019)         | 12,512               | [Voteview data](https://voteview.com/data) (Lewis et al. 2019), <br /> [Congressional Bills Project data](http://www.congressionalbills.org/) (Adler/Wilkserson 2018) | -->
+
+## Constraints
+
+
+MPs (*Member of Parliament*)
+
+---
 
 # Scalability
 
@@ -72,6 +182,18 @@ cran_downloads(
 
 # Obstacles and Problems
 
+---
+
 # Outlook and Conclusion
 
+---
+
+# Appendix
+
+---
+
 # References
+
+Göbel, S., & Munzert, S. (2021). The Comparative Legislators Database. British Journal of Political Science, 1-11. doi:10.1017/S0007123420000897
+
+<!-- Name (Date). Title [Type]. doi:10.5281/zenodo.XXXX -->
