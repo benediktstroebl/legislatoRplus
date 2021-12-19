@@ -90,9 +90,11 @@ core_de <- deu_core %>%
       party == "BÜNDNIS 90/DIE GRÜNEN" ~ party_color_map$`BÜNDNIS 90/DIE GRÜNEN`,
       party == "DIE LINKE" ~ party_color_map$`DIE LINKE`,
       party == "PDS" ~ party_color_map$PDS,
-      party == "AfD" ~ party_color_map$AFD,
-      party == "DP" ~ party_color_map$DP
-    )
+      party == "AfD" ~ party_color_map$AfD,
+      party == "DP" ~ party_color_map$DP,
+      party == "none" ~ party_color_map$none
+    ),
+    border_weight = 1
   ) %>% 
   # Create new column "sessions_served" per pageid
   left_join(aggregate(session~pageid, deu_political, paste0, collapse=", ") %>% dplyr::rename(sessions_served = session)) %>%

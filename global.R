@@ -1,5 +1,6 @@
 # Dependencies ------------------------------------------------------------
 library(shiny)
+library(raster)
 library(shinycssloaders)
 library(shinyjs)
 library(tidyverse)
@@ -13,26 +14,35 @@ library(stringr)
 library(janitor)
 library(ggdist)
 library(partycoloR)
+library(leaflegend)
 
 # Constants used throughout code  ----------------------------------------
 
-# regex statement to translate constituency name/WKR_NAME to join key
+  # regex statement to translate constituency name/WKR_NAME to join key
 char_to_replace_for_join <- "-|–|[:blank:]|–|[.]"
 
-# Party colors
+  # Party colors
 party_color_map <- list(
   CDU = "#000000",
   SPD = "#E3001B",
   FDP = "#FFEE00",
-  AFD = "009EE0",
+  AfD = "#009EE0",
   `BÜNDNIS 90/DIE GRÜNEN` = "#64A12D",
-  # encoding issues
   `BÃœNDNIS 90/DIE GRÃœNEN` = "#64A12D",
   CSU = "#008AC5",
   PDS = "#BE3075",
   `DIE LINKE` = "#BE3075",
-  DP = "#F80000"
+  DP = "#F80000",
+  none = "#636363"
 )
+
+# Register fonts with R, for Windows users
+if (.Platform$OS.type == "windows") {
+  windowsFonts(Corbel=windowsFont("Corbel"))
+}
+
+# Party logo path
+#party_logo_path <- here::here("test_leaflet_shiny/party_logos")
 
 # Load Scripts ------------------------------------------------------------
 
@@ -54,16 +64,15 @@ source("radar_plot_config.R")
 # Load legislatoR theme
 source("theme_lgl.R")
 
+
 # Data Lists to populate dropdown selectors -------------------------------
 
-# list with sessions
 session_list <- deu_political %>%
   distinct(session) %>%
   filter(session >= 15) %>%
   arrange(session) %>% 
   pull
 
-# names for session list
 names(session_list) <- c(
               "BTW 2002 | Session 15",
               "BTW 2005 | Session 16",
@@ -73,18 +82,18 @@ names(session_list) <- c(
               #"BTW2021 | LP20"  # Session 20 not yet in legislatoR data
 )
 
-# list with parties
 party_list <- deu_political %>% 
   filter(session >= 15) %>%
   distinct(party) %>% 
   pull
 
-# list with MPs
 mp_list <- core_de %>%
   filter(session >= 15) %>%
   distinct(name) %>%
   add_row(name = "", .before = 1) %>% 
   pull
+
+
 
 
 

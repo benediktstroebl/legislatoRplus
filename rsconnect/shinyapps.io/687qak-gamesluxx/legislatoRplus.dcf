@@ -5,7 +5,9 @@ account: 687qak-gamesluxx
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 5342574
-bundleId:
+bundleId: 5386633
 url: https://687qak-gamesluxx.shinyapps.io/legislatoRplus/
-when: 1639768965.71053
-lastSyncTime: 1639768965.71053
+when: 1639784613.95594
+lastSyncTime: 1639784613.95594
+asMultiple: FALSE
+asStatic: FALSE
