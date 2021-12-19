@@ -17,10 +17,10 @@ library(partycoloR)
 
 # Constants used throughout code  ----------------------------------------
 
-  # regex statement to translate constituency name/WKR_NAME to join key
+# regex statement to translate constituency name/WKR_NAME to join key
 char_to_replace_for_join <- "-|–|[:blank:]|–|[.]"
 
-  # Party colors
+# Party colors
 party_color_map <- list(
   CDU = "#000000",
   SPD = "#E3001B",
