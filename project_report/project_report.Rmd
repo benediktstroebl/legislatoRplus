@@ -43,7 +43,7 @@ In the advanced and practical stages, a certain division of labor crystallized. 
 
 In detail, the division of work was as follows:
 
-- __Benedikt Ströbl__ mainly took care of the configuration of the HTML template and handled the different map data formats. He also created the visual map base with special emphasis on the constituencies and the implied complex data matching and wrangling tasks.
+- __Benedikt Ströbl__ mainly handled the different map data formats and took care of the configuration of the HTML template. He also created the visual `leaflet` map base and interactivity with special emphasis on the constituencies and the implied complex data matching and wrangling tasks inside of the `Shiny` backend context.
 
 - __Lukas Warode__ was mainly involved in setting up the `Shiny` backend and did a lot of the practical data manipulation inside and outside the `Shiny` reactivity context. He also worked on the `ggplot2` foundation of the two descriptive statistics and configured the visual and written outline of the `R Markdown` report.
 
@@ -135,6 +135,8 @@ downloads_lgl %>%
 
 ## Used Data
 
+### `legislatoR`
+
 The package `legislatoR` provides nine individual tables that can be both used individually and combined after merging with the respective key variables. For the scope of this project, the tables **Core**, **Political** and **Portraits** are used, which are highlighted in **Figure 2**. All three tables can be merged using the **pageid** key variable.
 
 The respective tables are used for different purposes within `legislatoR+'s` scope:
@@ -166,6 +168,16 @@ The respective tables are used for different purposes within `legislatoR+'s` sco
 </div>
 </div>
 
+### *Bundeswahlleiter*
+
+The German federal election commissioner (*Bundeswahlleiter*) is responsible for overseeing the German federal elections and ensuring a fairly carried out vote. Spearheaded by the German federal officer of statistics, the *Bundeswahlleiter* also provides data about historic results, as well as geographic information about German constituencies in the federal election context. The latter plays a crucial role for the scope of `legislatoR+`. Consequently, we build on two keys data tables of the *Bundeswahlleiter*: 
+
+- `kerg` files provide insights into the German federal election results on the federal and constituency-level. Despite not being of elementary importance for the scope of the current state of the dashboard, they were useful in the process of joining `legislatoR` tables with *Bundeswahlleiter* data sets, while offering further analytical potentials for future extensions.
+
+- Structural shapefiles: The geometric data in the shapefile format is required for illustrating a map exhibiting the constituency geometry for federal elections. Since we acquired shapefiles for the past five federal elections since 2002, we took into account changes in constituency borders. 
+
+Nevertheless, with the *Bundeswahlleiter* data, there have been various inconsistencies that led to difficulties in working with the data, which we further elaborate on in the [Obstacles and Problems] section.
+ 
 ## Constraints
 
 The scope of this version (Final Data Science Project) includes some constraints. From the ten country sample, only legislators from Germany are used that are chronologically at least part of the 15th legislative period. The current state of `legislatoR` does not include the most recent legislative period of the *Bundestag* (20), hence, MPs from legislative period 15 to 19 are part of `legislatoR+'s` sample.
@@ -246,6 +258,8 @@ The previous chapters have shown that `legislatoR+` exhibits various possibiliti
 ---
 
 # References
+
+www.bundeswahlleiter.de
 
 Göbel, S., & Munzert, S. (2020). Introducing `legislatoR`.
 
