@@ -46,22 +46,19 @@ if (.Platform$OS.type == "windows") {
 # Load Scripts ------------------------------------------------------------
 
 # Load SpatialPolygon data for map
-source("shapefile_loader.R")
+source("utils/shapefile_loader.R")
 
 # Load Wahlkreis mapping for each session
-source("wahlkreis_data_loader.R")
+source("utils/wahlkreis_data_loader.R")
 
 # Load legislatoR data setup
-source("legislator_wrangler.R")
+source("utils/legislator_wrangler.R")
 
 # join shapefiles with legislatoR & constituency data and create popup html
-source("shapefile_wrangler.R")
-
-# Load radar plot configuration 
-source("radar_plot_config.R")
+source("utils/shapefile_wrangler.R")
 
 # Load legislatoR theme
-source("theme_lgl.R")
+source("utils/theme_lgl.R")
 
 
 # Data Lists to populate dropdown selectors -------------------------------
