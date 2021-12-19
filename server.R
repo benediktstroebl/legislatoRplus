@@ -349,112 +349,189 @@ server <- function(input, output, session) {
       "15" = btw02_wahlkreise_spdf
     )
     
+
     # Select the right SpatialPolygon data for the selected session
     if (length(input$session_input) > 0){
       selected_spdf <- btw_spdf[[max(input$session_input)]]
-      
+
     } else {
       selected_spdf <- btw_spdf[[as.character(max(session_list))]]
     }
     
-    print(input$name_input == "")
 
-    # Assign color scheme depending on selectors
-    if (input$name_input != "" & length(input$party_input) == 0){
+      
+      # Assign color scheme depending on selectors
+      if (input$name_input != "" & length(input$party_input) == 0){
         print("1")
         selected_spdf@data <- selected_spdf@data %>%
           mutate(
-               party_color = case_when(name == input$name_input ~
-                                         party_color,
-                                       TRUE ~ "#d9d9d9"),
-               fill_opacity = case_when(name == input$name_input ~
-                                          0.7,
-                                        TRUE ~ 0.4))
-    } else if (length(input$party_input) > 0 & input$name_input == "") {
-      # If party, but no MP is selected, highlight party constituencies
+            party_color = case_when(name == input$name_input ~
+                                      party_color,
+                                    TRUE ~ "#d9d9d9"),
+            fill_opacity = case_when(name == input$name_input ~
+                                       0.7,
+                                     TRUE ~ 0.4))
+      } else if (length(input$party_input) > 0 & input$name_input == "") {
+        # If party, but no MP is selected, highlight party constituencies
         print("2")
-      
+        
         selected_spdf@data <- selected_spdf@data %>%
           mutate(
-               party_color = case_when(party %in% input$party_input ~
-                                         party_color,
-                                       TRUE ~ "#d9d9d9"),
-               fill_opacity = case_when(party %in% input$party_input ~
-                                          0.7,
-                                        TRUE ~ 0.4))
-    } else if (length(input$party_input) > 0 & input$name_input != "") {
-      print("3")
-      
-      selected_spdf@data <- selected_spdf@data %>%
-        mutate(
-          party_color = case_when(party %in% input$party_input ~
-                                    party_color,
-                                  TRUE ~ "#d9d9d9"),
-          fill_opacity = case_when(party %in% input$party_input & name != input$name_input ~
-                                     0.3,
-                                   party %in% input$party_input & name == input$name_input ~
-                                     0.8,
-                                   TRUE ~ 0.3)
+            party_color = case_when(party %in% input$party_input ~
+                                      party_color,
+                                    TRUE ~ "#d9d9d9"),
+            fill_opacity = case_when(party %in% input$party_input ~
+                                       0.7,
+                                     TRUE ~ 0.4))
+      } else if (length(input$party_input) > 0 & input$name_input != "") {
+        print("3")
+        
+        selected_spdf@data <- selected_spdf@data %>%
+          mutate(
+            party_color = case_when(party %in% input$party_input ~
+                                      party_color,
+                                    TRUE ~ "#d9d9d9"),
+            fill_opacity = case_when(party %in% input$party_input & name != input$name_input ~
+                                       0.3,
+                                     party %in% input$party_input & name == input$name_input ~
+                                       0.8,
+                                     TRUE ~ 0.3)
           )
-    } else {
-      selected_spdf@data <- selected_spdf@data %>%
-        mutate(
-          fill_opacity = 0.5)
-    }
-    
-    # Add state border if selected MP is elected via Landeslist
-    if (str_detect(input$name_input, "Landesliste")) {
-      # Find name of state that this MP was running in for the latest selected session
-      land_name <- core_de %>% 
-        filter(name == input$name_input) %>% 
-        distinct(constituency2) %>% 
-        pull
+      } else {
+        selected_spdf@data <- selected_spdf@data %>%
+          mutate(
+            fill_opacity = 0.5)
+      }
       
-      # create new spdf with aggregated polygon for land border
-      land_border_spdf <- aggregate(selected_spdf, by = "LAND_NAME") %>% subset(LAND_NAME == land_name)
-      # assign NA columns to be able to bind with full dataframe again
-      land_border_spdf@data[colnames(btw02_wahlkreise_spdf@data)] <- NA
-      # assign values to formatting relevant columns
-      land_border_spdf@data <-land_border_spdf@data %>% 
-        mutate(
-          fill_opacity = 0,
-          party_color = "#000000",
-        )
-      
-      # Bind additional polygon with state border to spdf for selected session
-      selected_spdf <- rbind(land_border_spdf, selected_spdf)
-    }
+      # Add state border if selected MP is elected via Landeslist
+      if (str_detect(input$name_input, "Landesliste")) {
+        # Find name of state that this MP was running in for the latest selected session
+        land_name <- core_de %>%
+          filter(name == input$name_input) %>%
+          distinct(constituency2) %>%
+          pull
+        
+        # Find party color of MP
+        MP_party_color <- core_de %>%
+          filter(name == input$name_input) %>%
+          select(party_color) %>%
+          distinct() %>% 
+          pull
 
-    
+        # create new spdf with aggregated polygon for land border
+        land_border_spdf <- raster::aggregate(selected_spdf, by = "LAND_NAME") %>% subset(LAND_NAME == land_name)
+        # assign NA columns to be able to bind with full dataframe again
+        land_border_spdf@data[colnames(btw02_wahlkreise_spdf@data)] <- NA
+        # assign values to formatting relevant columns
+        land_border_spdf@data <-land_border_spdf@data %>%
+          mutate(
+            fill_opacity = 0,
+            party_color = MP_party_color,
+            border_weight = 5
+          )
+
+        # Bind additional polygon with state border to spdf for selected session
+        selected_spdf <- rbind(land_border_spdf, selected_spdf)
+      }
+      
     return(selected_spdf)
+   
     
   })
   
+  highlight_options <- highlightOptions(
+    color = '#636363',
+    fillColor = '#636363',
+    opacity = 1,
+    weight = 2,
+    fillOpacity = ~ fill_opacity,
+    bringToFront = FALSE
+  )
+  
+  color_pal <- reactive({
+    # Party color palette for leaflet map legend -------------------------------
+    if (length(input$session_input) > 0) {
+      # if at least one session is selected
+      filtered_color_df <- core_de %>% 
+        filter(session %in% input$session_input) %>% 
+        filter(!str_detect(constituency, "Landesliste")) %>% 
+        distinct(party, party_color) %>% 
+        filter(!is.na(party)) 
+    } else {
+      # If no specific session is selected
+      filtered_color_df <- core_de %>% 
+        filter(party != "none") %>% 
+        filter(session == max(session)) %>% 
+        filter(!str_detect(constituency, "Landesliste")) %>% 
+        distinct(party, party_color) %>% 
+        filter(!is.na(party))
+    }
+    
+    
+    pal <- colorFactor(palette = filtered_color_df %>% 
+                                  pull(party_color),
+                       levels = filtered_color_df %>% 
+                                  pull(party))
+    return(pal)
+  })
+  
+  
+  
   
   output$map <- renderLeaflet({
-    # Plot on leaflet map
+      
+
+  # Plot on leaflet map
+  if (length(input$session_input) > 1) {
+    
     leaflet() %>%
       addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
       addPolygons(
         data = wahlkreis_ll(),
+        group = "2002 Election",
         stroke = TRUE,
-        weight = 1,
+        weight = ~ border_weight,
         color = ~ party_color,
         fillColor = ~ party_color,
         fillOpacity = ~ fill_opacity,
         smoothFactor = 0.5,
         layerId = ~ name,
         popup = ~ popup_image,
-        highlightOptions = highlightOptions(
-          color = '#636363',
-          fillColor = '#636363',
-          opacity = 1,
-          weight = 2,
+        highlightOptions = highlight_options
+      ) %>%
+      addLegend(
+        data = wahlkreis_ll(),
+        title = "",
+        position = "bottomleft",
+        pal = color_pal(),
+        values = ~ party,
+        opacity = 1
+      ) 
+    } else {
+      leaflet() %>%
+        addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
+        addPolygons(
+          data = wahlkreis_ll(),
+          stroke = TRUE,
+          weight = ~ border_weight,
+          color = ~ party_color,
+          fillColor = ~ party_color,
           fillOpacity = ~ fill_opacity,
-          bringToFront = TRUE,
-          sendToBack = TRUE
+          smoothFactor = 0.5,
+          layerId = ~ name,
+          popup = ~ popup_image,
+          highlightOptions = highlight_options
+        ) %>%
+        addLegend(
+          data = wahlkreis_ll()[wahlkreis_ll()@data$party != "none" & !is.na(wahlkreis_ll()@data$party),],
+          title = "",
+          position = "bottomleft",
+          pal = color_pal(),
+          values = ~ party,
+          opacity = 1
         )
-      )
+    }
+      
   })
   
   # Observe event for filtering with clicking in map

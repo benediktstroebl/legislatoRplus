@@ -42,8 +42,23 @@ btw09_wahlkreise_spdf <-
           use_iconv = TRUE) %>%
   # Transform spatial polygons data frame to longlat data
   spTransform(CRS("+init=epsg:4326"))
+
+# There are also 40 duplicate values + polygons we dont need
+btw09_duplicate_values_indices <-
+  btw09_wahlkreise_spdf@data %>% 
+  mutate(index = as.integer(rownames(btw09_wahlkreise_spdf@data))) %>% 
+  filter(duplicated(WKR_NR)) %>% 
+  select(index) %>% 
+  pull
+# Drop duplicate polygons
+btw09_wahlkreise_spdf@polygons <- btw09_wahlkreise_spdf@polygons[-btw09_duplicate_values_indices]
+
 btw09_wahlkreise_spdf@data <- btw09_wahlkreise_spdf@data %>% 
-  mutate(session = 17, WKR_NR = as.integer(WKR_NR))
+  mutate(session = 17, WKR_NR = as.integer(WKR_NR)) %>% 
+  # For the btw09 there are three extra columns in the shapefiles we do not need
+  select(-AREA, -PERIMETER, -FLAG) %>% 
+  # Drop 40 duplicate rows from the data part of spdf
+  distinct()
 
 
 
@@ -72,28 +87,24 @@ btw02_wahlkreise_spdf@data <- btw02_wahlkreise_spdf@data %>%
 
 
 
-# 
-# 
-# 
+
 # #Plot on leaflet map
-# leaflet() %>%
-#   addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
-#   addPolygons(
-#     data = aggregate(btw02_wahlkreise_spdf, by = "LAND_NAME") %>% subset(LAND_NAME == "Bayern"),
-#     stroke = TRUE,
-#     weight = 2,
-#     color = "#000000",
-#     fillColor = '#968C83',
-#     fillOpacity = 0,
-#     smoothFactor = 0.5,
-#     # popup = paste0(btw09_wahlkreise_spdf@data$name, btw09_wahlkreise_spdf@data$WKR_NAME.x),
-#     highlightOptions = highlightOptions(
-#       color = '#636363',
-#       fillColor = '#636363',
-#       opacity = 1,
-#       weight = 2,
-#       fillOpacity = 0.5,
-#       bringToFront = TRUE,
-#       sendToBack = TRUE
-#     )
-#   )
+leaflet() %>%
+  addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
+  addPolygons(
+    data =btw09_wahlkreise_spdf[btw09_wahlkreise_spdf@data$LAND_NAME == "asd",],
+    stroke = TRUE,
+    weight = 2,
+    color = "#000000",
+    fillColor = '#968C83',
+    fillOpacity = 0,
+    smoothFactor = 0.5,
+    popup = paste0(btw09_wahlkreise_spdf@data$name, btw09_wahlkreise_spdf@data$WKR_NAME.x),
+    highlightOptions = highlightOptions(
+      color = '#636363',
+      fillColor = '#636363',
+      opacity = 1,
+      weight = 2,
+      fillOpacity = 0.5,
+      bringToFront = TRUE,
+      sendToBack = TRUE))
