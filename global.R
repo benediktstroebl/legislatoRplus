@@ -14,7 +14,6 @@ library(stringr)
 library(janitor)
 library(ggdist)
 library(partycoloR)
-library(leaflegend)
 
 # Constants used throughout code  ----------------------------------------
 
