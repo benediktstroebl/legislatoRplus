@@ -11,7 +11,6 @@ library(rgdal)
 library(sp)
 library(stringr)
 library(janitor)
-library(ggthemes)
 library(ggdist)
 library(partycoloR)
 
