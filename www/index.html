@@ -39,6 +39,19 @@
         .selectize-dropdown {
             z-index: 10000;
         }
+        
+        .info {
+            font-family: "Corbel";
+        }
+        
+        .vignette-header{
+            color: white;
+        }
+        
+        .legislator-span {
+            font-weight: bold;
+            color: white;
+        }
     </style>
 </head>
 
@@ -81,7 +94,7 @@
         </nav>  <!-- end header-nav -->
 
         <a class="header-menu-toggle" href="#0">
-            <span class="header-menu-text">Menu</span>
+            <span class="header-menu-text legislator-span">Menu</span>
             <span class="header-menu-icon"></span>
         </a>
 
@@ -101,11 +114,11 @@
 
             <div class="row home-content__main">
 
-                <h3>legislatoR+</h3>
+                <h2 class="legislator-span">legislatoR+</h2>
 
                 <h1>
-                    This shiny app<br>
-                    offers an add-on for the <br><span style="font-weight: bold">legislatoR</span><br> database
+                    The visual interface<br>
+                    to the <br><span class="legislator-span">legislatoR</span><br> database
                 </h1>
                 
 
@@ -119,7 +132,7 @@
 
             <div class="home-content__scroll">
                 <a href="#about" class="scroll-link smoothscroll">
-                    <span>Scroll Down</span>
+                    <span class="legislator-span">Scroll Down</span>
                 </a>
             </div>
 
@@ -239,18 +252,22 @@
         <div class="row section-header aos-init aos-animate" data-aos="fade-up">
             <div class="col-full">
                 <h3 class="subhead">About the project</h3>
-                <h1 class="display-2--light">legislatoR - Interface to the Comparative Legislators Database</h1>
+                <h1 class="display-2--light">Interface to the Comparative Legislators Database</h1>
             </div>
         </div>
         <div class="row about-stats stats block-1-2 block-m-1-2 block-mob-full">
             <div class="col-block service-item">
-                <a href="https://github.com/saschagobel/legislatoR">
+                <h3 class="display-2--light">legislatoR</h3>
+                <h4 class="display-2--light vignette-header" >R Package</h4>
+                <a href="https://github.com/saschagobel/legislatoR" target="_blank">
                     <img src="images/legislatoR-sticker.png" width="200px">
                 </a>
 
             </div>
             <div class="col-block service-item">
-                <a href="https://github.com/intro-to-data-science-21/data-project-legislatoRplus">
+                <h3 class="display-2--light">legislatoR+</h3>
+                <h4 class="display-2--light vignette-header" >Dashboard</h4>
+                <a href="https://github.com/intro-to-data-science-21/data-project-legislatoRplus" target="_blank">
                     <img src="images/github-logo.png" width="200px">
                 </a> 
             </div>
