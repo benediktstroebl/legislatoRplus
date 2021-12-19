@@ -8,14 +8,14 @@
  * corbel
 ================================================================================ */
 @font-face {
-    font-family: "corbel";
+    font-family: "Corbel";
     src: url("../fonts/corbel/corbel.ttf") format("ttf");
     font-style: normal;
     font-weight: normal;
 }
 
 @font-face {
-    font-family: "corbel-bold";
+    font-family: "Corbel-bold";
     src: url("../fonts/corbel/corbel-bold.ttf") format("ttf");
     font-style: bold;
     font-weight: bold;

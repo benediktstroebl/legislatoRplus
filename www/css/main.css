@@ -75,7 +75,7 @@ html, body {
 
 body {
     background: #111111;
-    font-family: "corbel", serif;
+    font-family: "Corbel", serif;
     font-size: 1.7rem;
     font-style: normal;
     font-weight: normal;
@@ -111,7 +111,7 @@ a:hover, a:active {
  * ------------------------------------------------------------------- */
 h1, h2, h3, h4, h5, h6, 
 .h1, .h2, .h3, .h4, .h5, .h6 {
-    font-family: "corbel", sans-serif;
+    font-family: "Corbel", sans-serif;
     color: #000000;
     font-style: normal;
     font-weight: normal;
@@ -239,7 +239,7 @@ blockquote:before {
 }
 
 blockquote p {
-    font-family: "corbel", sans-serif;
+    font-family: "Corbel", sans-serif;
     padding: 0;
     font-size: 2.1rem;
     line-height: 1.857;
@@ -328,7 +328,7 @@ hr {
 
 .control-labe{
     font-size: 16rem;
-    font-family "corbel";
+    font-family "Corbel";
 }
 
 
@@ -788,13 +788,23 @@ select:-webkit-autofill:focus {
  * # buttons
  *
  * ------------------------------------------------------------------- */
+.shiny-download-link {
+    height: 50px;
+    border-radius: 50px;
+}
+
+.download-button-div{
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
 .btn,
 button,
 input[type="submit"],
 input[type="reset"],
 input[type="button"] {
     display: inline-block;
-    font-family: "corbel", sans-serif;
+    font-family: "Corbel", sans-serif;
     font-size: 1.5rem;
     text-transform: uppercase;
     letter-spacing: .3rem;
@@ -1161,7 +1171,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
     right: 0;
     top: -3.6rem;
     display: block;
-    font-family: "corbel", sans-serif;
+    font-family: "Corbel", sans-serif;
     color: #FFFFFF;
     font-size: 1.3rem;
     line-height: 1;
@@ -1221,7 +1231,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
  * ## display headings
  * ------------------------------------------------------------------- */
 .display-1 {
-    font-family: "corbel", sans-serif;
+    font-family: "Corbel", sans-serif;
     font-size: 7.8rem;
     line-height: 1.25;
     color: #000000;
@@ -1233,7 +1243,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
 }
 
 .display-2 {
-    font-family: "corbel", sans-serif;
+    font-family: "Corbel", sans-serif;
     font-size: 5.2rem;
     line-height: 1.255;
     color: #000000;
@@ -1514,7 +1524,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
 }
 
 .header-nav h3 {
-    font-family: "corbel-bold", sans-serif;
+    font-family: "Corbel-bold", sans-serif;
     font-size: 28px;
     line-height: 1.5;
     text-transform: uppercase;
@@ -1799,7 +1809,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
 }
 
 .home-content h3 {
-    font-family: "corbel", sans-serif;
+    font-family: "Corbel", sans-serif;
     font-size: 1.6rem;
     color: rgba(255, 255, 255, 0.5);
     letter-spacing: .3rem;
@@ -1810,7 +1820,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
 }
 
 .home-content h1 {
-    font-family: "corbel", sans-serif;
+    font-family: "Corbel", sans-serif;
     font-size: 6.3rem;
     line-height: 1.333;
     margin-top: 0;
@@ -2245,7 +2255,7 @@ html.no-csstransitions .home-content__main {
 }
 
 .stats__count {
-    font-family: "corbel-bold", sans-serif;
+    font-family: "Corbel-bold", sans-serif;
     font-size: 8.4rem;
     line-height: 1;
     color: #000000 !important;
@@ -2256,7 +2266,7 @@ html.no-csstransitions .home-content__main {
 }
 
 .stats h5 {
-    font-family: "corbel-bold", sans-serif;
+    font-family: "Corbel-bold", sans-serif;
     margin-top: 1.8rem;
     color: #000000;
     font-size: 1.8rem;

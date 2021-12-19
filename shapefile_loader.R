@@ -70,18 +70,20 @@ btw02_wahlkreise_spdf@data <- btw02_wahlkreise_spdf@data %>%
   mutate(session = 15, WKR_NR = as.integer(WKR_NR))
 
 
-# test leaflet map
+# 
+# 
+# #Plot on leaflet map
 # leaflet() %>%
 #   addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
 #   addPolygons(
-#     data = btw09_wahlkreise_spdf,
+#     data = aggregate(btw02_wahlkreise_spdf, by = "LAND_NAME") %>% subset(LAND_NAME == "Bayern"),
 #     stroke = TRUE,
-#     weight = 1,
-#     color = "#968C83",
+#     weight = 2,
+#     color = "#000000",
 #     fillColor = '#968C83',
-#     fillOpacity = 0.5,
+#     fillOpacity = 0,
 #     smoothFactor = 0.5,
-#     popup = paste0(btw09_wahlkreise_spdf@data$name, btw09_wahlkreise_spdf@data$WKR_NAME.x),
+#     # popup = paste0(btw09_wahlkreise_spdf@data$name, btw09_wahlkreise_spdf@data$WKR_NAME.x),
 #     highlightOptions = highlightOptions(
 #       color = '#636363',
 #       fillColor = '#636363',
