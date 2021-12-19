@@ -40,7 +40,7 @@ sessions_per_mp_de <- deu_political %>%
 # entry age first session
 entry_age_first_session_de <- deu_political %>% 
   left_join(deu_core) %>% 
-  group_by(pageid) %>% 
+  group_by(pageid, name) %>% 
   filter(session == min(session)) %>% 
   ungroup() %>% 
   mutate(
@@ -50,8 +50,8 @@ entry_age_first_session_de <- deu_political %>%
       NA_real_
     )
   ) %>% 
-  select(pageid, wikidataid, age_session_start) %>% 
-  distinct(pageid, .keep_all = T)
+  select(pageid, name, wikidataid, age_session_start) %>% 
+  distinct(pageid, name, .keep_all = T)
 
 # age at death
 age_mp_de <- deu_core %>% 
@@ -62,12 +62,17 @@ age_mp_de <- deu_core %>%
       TRUE ~ NA_real_
     )
   ) %>% 
-  select(pageid, wikidataid, age)
+  select(pageid, name, wikidataid, age)
 
 # final df
 deu_metrics <- deu_core %>% 
-  distinct(pageid) %>% 
+  distinct(pageid, name) %>% 
   left_join(traffic_per_mp_de) %>% 
   left_join(sessions_per_mp_de) %>% 
   left_join(entry_age_first_session_de) %>% 
   left_join(age_mp_de) 
+
+# radar plot df transformation --------------------------------------------
+
+
+  
