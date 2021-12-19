@@ -29,7 +29,7 @@ party_color_map <- list(
   FDP = "#FFEE00",
   AfD = "#009EE0",
   `BÜNDNIS 90/DIE GRÜNEN` = "#64A12D",
-  `BÜNDNIS 90/DIE GRÜNEN` = "#64A12D",
+  `BÃœNDNIS 90/DIE GRÃœNEN` = "#64A12D",
   CSU = "#008AC5",
   PDS = "#BE3075",
   `DIE LINKE` = "#BE3075",

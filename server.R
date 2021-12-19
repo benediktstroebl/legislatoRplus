@@ -467,7 +467,7 @@ server <- function(input, output, session) {
         filter(!is.na(party))
     }
     
-    
+    # Create factor color palette
     pal <- colorFactor(palette = filtered_color_df %>% 
                                   pull(party_color),
                        levels = filtered_color_df %>% 
