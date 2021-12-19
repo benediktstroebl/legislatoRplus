@@ -135,7 +135,13 @@ server <- function(input, output, session) {
     mp_df() %>% 
       distinct(name) %>% 
       pull
-
+  )
+  
+  # N of reactive data frame
+  n_df <- reactive(
+    reactive_df() %>% 
+      count %>% 
+      pull
   )
   
   # Age plot ----------------------------------------------------------------
@@ -145,6 +151,13 @@ server <- function(input, output, session) {
       distinct(age) %>% 
       pull
   )
+  
+  # Median Age
+  median_age <- reactive(
+    median(
+      reactive_df()$age
+    )
+  )
 
   # Age plot
   age_plot <- reactive({
@@ -152,39 +165,147 @@ server <- function(input, output, session) {
     # Plot without highlight
     if (input$name_input == "") {
       ggplot(reactive_df(), aes(x = age)) +
-        stat_slab(alpha = 0.5, justification = 0) +
-        geom_boxplot(width = 0.1) +
+        geom_density(
+          aes(y = ..scaled..),
+          color = "black",
+          alpha = 0.3,
+          fill = "black",
+          size = 0.6
+        ) +
+        geom_boxplot(width = 0.06, position = position_nudge(x = 0, y = -0.05)) +
+        annotate(
+          geom = "text",
+          x = median_age(),
+          y = -0.12,
+          label = paste0(expression(tilde(x)), ": ", as.character(median_age())),
+          family = "Corbel",
+          parse = T
+        ) +
+        annotate(
+          geom = "text",
+          x = max(reactive_df()$age) + sd(reactive_df()$age) / 2,
+          y = 0.06,
+          label = paste0("N: ", as.character(n_df())),
+          family = "Corbel"
+        ) +
         theme_lgl() +
+        theme(axis.text.y = element_blank()) +
         labs(title = "Age",
              subtitle = "Density & Boxplot",
-             x = "", 
+             x = "Age (Years)", 
              y = "")
       
     # Highlight MP with geom_vline()
-    } else {
+    ## if MP age > median age align highlighting on left side
+    } else if(age_mp() > median_age()) {
       ggplot(reactive_df(), aes(x = age)) +
-        stat_slab(alpha = 0.5, justification = 0) +
-        geom_boxplot(width = 0.1) +
+        geom_density(
+          aes(y = ..scaled..),
+          color = "black",
+          alpha = 0.3,
+          fill = "black",
+          size = 0.6
+        ) +
+        geom_boxplot(width = 0.06, position = position_nudge(x = 0, y = -0.05)) +
+        annotate(
+          geom = "text",
+          x = median_age(),
+          y = -0.12,
+          label = paste0(expression(tilde(x)), ": ", as.character(median_age())),
+          family = "Corbel",
+          parse = T
+        ) +
+        annotate(
+          geom = "text",
+          x = max(reactive_df()$age) + sd(reactive_df()$age) / 2,
+          y = 0.06,
+          label = paste0("N: ", as.character(n_df())),
+          family = "Corbel"
+        ) +
         theme_lgl() +
+        theme(axis.text.y = element_blank()) +
         labs(title = "Age",
              subtitle = paste0("Density & Boxplot | MP: ", name_mp()),
-             x = "", 
+             x = "Age (Years)", 
              y = "") +
-        geom_vline(xintercept = age_mp(), 
-                   alpha = 0.5,
-                   color = "black") + 
-        geom_text(aes(x = age_mp(), 
-                      y = 0.5, 
-                      label = paste0("Age ", 
-                                     name_mp(),
-                                     ": ", 
-                                     as.character(round(age_mp())),
-                                     " years")
-                      ), 
-                  angle = 90,
-                  vjust = -0.5,
-                  family = "Corbel",
-                  color = "grey40")
+        geom_vline(
+          xintercept = age_mp(),
+          color = "black",
+          alpha = 0.7,
+          linetype = 2,
+        ) +
+        annotate(
+          geom = "text",
+          x = age_mp(),
+          y = 0.9,
+          label = name_mp(),
+          family = "Corbel",
+          hjust = 1.1
+        ) +
+        annotate(
+          geom = "text",
+          x = age_mp(),
+          y = 0.86,
+          label = paste0("Age: ", as.character(age_mp())),
+          family = "Corbel",
+          hjust = 1.5,
+          color = "gray40"
+        ) 
+    ## if MP age < median age align highlighting on right side
+    } else {
+      ggplot(reactive_df(), aes(x = age)) +
+        geom_density(
+          aes(y = ..scaled..),
+          color = "black",
+          alpha = 0.3,
+          fill = "black",
+          size = 0.6
+        ) +
+        geom_boxplot(width = 0.06, position = position_nudge(x = 0, y = -0.05)) +
+        annotate(
+          geom = "text",
+          x = median_age(),
+          y = -0.12,
+          label = paste0(expression(tilde(x)), ": ", as.character(median_age())),
+          family = "Corbel",
+          parse = T
+        ) +
+        annotate(
+          geom = "text",
+          x = max(reactive_df()$age) + sd(reactive_df()$age) / 2,
+          y = 0.06,
+          label = paste0("N: ", as.character(n_df())),
+          family = "Corbel"
+        ) +
+        theme_lgl() +
+        theme(axis.text.y = element_blank()) +
+        labs(title = "Age",
+             subtitle = paste0("Density & Boxplot | MP: ", name_mp()),
+             x = "Age (Years)", 
+             y = "") +
+        geom_vline(
+          xintercept = age_mp(),
+          color = "black",
+          alpha = 0.7,
+          linetype = 2,
+        ) +
+        annotate(
+          geom = "text",
+          x = age_mp(),
+          y = 0.9,
+          label = name_mp(),
+          family = "Corbel",
+          hjust = -0.1
+        ) +
+        annotate(
+          geom = "text",
+          x = age_mp(),
+          y = 0.86,
+          label = paste0("Age: ", as.character(age_mp())),
+          family = "Corbel",
+          hjust = -0.5,
+          color = "gray40"
+        ) 
     }
     
   })
