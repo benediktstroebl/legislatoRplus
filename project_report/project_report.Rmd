@@ -1,7 +1,7 @@
 ---
 title: "Final Data Science Project: `legislatoR+`"
 subtitle: "GRAD-C11: Introduction to Data Science | Hertie School | Fall Semester 2021"
-author: "Benedikt Ströbl, Lukas Warode\n\nWord count: `r as.integer(sub('(\\d+).+$', '\\1', system(sprintf('wc -w %s', knitr::current_input()), intern = TRUE))) - 20`"
+author: "Benedikt Ströbl, Lukas Warode"
 date: "Last compiled on: `r format(Sys.Date(), '%d %B %Y')`"
 output: 
   html_document:
@@ -11,7 +11,7 @@ output:
     css: hertie_style.css
 ---
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Hertie_School_of_Governance_logo.svg/2560px-Hertie_School_of_Governance_logo.svg.png" style="position:absolute;top:20px;right:20px;" width="200"/>
+<img src="images/hertie_school_logo.png" style="position:absolute;top:25px;right:15px;" width="150"/>
 
 ```{r setup, include=FALSE}
 # knitr chunk options
@@ -37,17 +37,24 @@ For reasons of accessibility and simplicity that comes with avoiding large data 
 
 ## Statement of Contribution
 
-Most of the project work ran in a very collaborative dynamic. In the preliminary stages, there was a lively exchange between both project members, with most of the ideas and theoretical approaches of the project having been implicitly worked on in two parts.
+Most of the project work took place in a very collaborative dynamic. In the preliminary stages, there was a lively exchange between both project members, with most of the ideas and theoretical approaches of the project having been implicitly worked on jointly.
 
 In the advanced and practical stages, a certain division of labor crystallized. However, a large part of the project was approached in a co-working place, which is why many practical projects and especially problems were evaluated directly together.
 
 In detail, the division of work was as follows:
 
-- __Benedikt Ströbl__ mainly took care of the configuration of the HTML template and handled the different map data formats. He also created the visual map base with special emphasis on the constituencies and the implied data matching and wrangling tasks.
+- __Benedikt Ströbl__ mainly took care of the configuration of the HTML template and handled the different map data formats. He also created the visual map base with special emphasis on the constituencies and the implied complex data matching and wrangling tasks.
 
-- __Lukas Warode__ was mainly involved in setting up the Shiny backend and did a lot of the practical data manipulation inside and outside the `Shiny` reactivity. He also worked on the `ggplot2` foundation of descriptive statistics and configured the visual and written outline of the `R Markdown` report.
+- __Lukas Warode__ was mainly involved in setting up the `Shiny` backend and did a lot of the practical data manipulation inside and outside the `Shiny` reactivity context. He also worked on the `ggplot2` foundation of the two descriptive statistics and configured the visual and written outline of the `R Markdown` report.
 
 <br/>
+
+## Word Count
+
+```{r}
+wordcountaddin:::text_stats() %>% 
+  kable_paper(html_font = "Corbel")
+```
 
 ---
 
@@ -96,7 +103,7 @@ downloads_lgl %>%
   labs(title = "Daily Downloads of legislatoR (CRAN)",
        x = "Date",
        y = "Download (N)") + 
-  scale_x_date(breaks = "3 months", date_labels = "%B %Y")
+  scale_x_date(breaks = "3 months", date_labels = "%b %Y")
 ```
 </div>
 
@@ -110,14 +117,14 @@ downloads_lgl %>%
   ungroup %>% 
   rename("Year" = 1, "Quarter" = 2, "Download (N)" = 3) %>% 
   kbl() %>% 
-  kable_paper()
+  kable_paper(html_font = "Corbel")
 ```
 </div>
 </div>
 
 ## Visual Conception and Ideas
 
-**Figure 2** shows a sketch made by both project members that shows. Note: The [Appendix] includes another sketch that exhibits a more detailed and analytical approach of the dashboard.
+**Figure 2** shows a sketch made by both project members that shows the dashboard in almost the identical format as it is submitted for the final project assignment. Both the map and the two descriptive statistics are integral part of the `legislatoR+'s` scope. Note: The [Appendix] includes another sketch that exhibits a more detailed and analytical approach of the dashboard.
 
 <div style="text-align: right"> **Figure 2: Picture of Dashboard Sketch** </div>
 ![](images/whiteboard_06-12-2021.jpg)
@@ -128,7 +135,7 @@ downloads_lgl %>%
 
 ## Used Data
 
-The package `legislatoR` provides nine individual tables that can be both used individually and combined after merging with the respective key variables. For the scope of this project, the tables **Core**, **Political**, **Social** and **Portraits** are used, which are highlighted in **Figure 2**. All four tables can be merged using the **pageid** key variable.
+The package `legislatoR` provides nine individual tables that can be both used individually and combined after merging with the respective key variables. For the scope of this project, the tables **Core**, **Political** and **Portraits** are used, which are highlighted in **Figure 2**. All three tables can be merged using the **pageid** key variable.
 
 The respective tables are used for different purposes within `legislatoR+'s` scope:
 
@@ -136,24 +143,22 @@ The respective tables are used for different purposes within `legislatoR+'s` sco
 
 - **Political** provides relevant information of the genuine political activity of included legislators. The table serves as the essential source of communicated information in the dashboard project. The variable `session` represents the legislative period of the MP (*Member of Parliament*), while `party` indicates the party affiliation of the politician. Both variables play a crucial role for the displayed plots in the dashboard. Furthermore, `constituency` is used to map the MPs per legislative period, while `session_start` and `session_end` serve for computing the maximum term length of individual MPs.
 
-- **Social**: @BENEDIKT
-
 - **Portraits** just includes the variable `image_url` next to the `pageid`. `image_url` provides the URL to the portrait images that are displayed on the respective (English) Wikipedia articles. The portrait images serve as an important visual element within the map of the dashboard and are also representing a crucial recognition value for the audience inside and outside of academia.
 
 <div style="text-align: right"> **Figure 3: Data Tables in Usage** </div>
 <div class = "row">
-<div class = "col-md-6">
+<div class = "col-md-5">
 ![](https://raw.githubusercontent.com/saschagobel/legislatoR/master/images/data-structure.png)
 </div>
 
-<div class = "col-md-6">
+<div class = "col-md-7">
 | Table       | Function            | Description                                                           | Key                |
 | :---------- | :------------------ | :-------------------------------------------------------------------- | :----------------- |  
 | **Core**        | **`get_core()`**        | **Fetches sociodemographic data of legislators**                          | **pageid, wikidataid** |
 | **Political**   | **`get_political()`**   | **Fetches political data of legislators**                                 | **pageid**             |
 | History     | `get_history()`     | Fetches full revision histories of legislators' Wikipedia biographies | pageid             |
 | Traffic     | `get_traffic()`     | Fetches daily user traffic on legislators' Wikipedia biographies      | pageid             |
-| **Social**      | **`get_social()`**      | **Fetches social media handles and website URLs of legislators**          | **wikidataid**         |
+| Social      | `get_social()`      | Fetches social media handles and website URLs of legislators          | wikidataid         |
 | **Portraits**   | **`get_portrait()`**    | **Fetches portrait urls of legislators**                                  | **pageid**             |
 | Offices     | `get_office()`      | Fetches political and other offices of legislators                    | wikidataid         |
 | Professions | `get_profession()`  | Fetches occupational data of legislators                              | wikidataid         |
@@ -161,25 +166,11 @@ The respective tables are used for different purposes within `legislatoR+'s` sco
 </div>
 </div>
 
-
-<!-- | Country                              | Legislative sessions        | Politicians (unique) | Integrated with    | -->
-<!-- | ------------------------------------ | --------------------------- | -------------------- | ------------------ | -->
-<!-- | Austria (Nationalrat)                | all 27<br /> (1920-2019)    | 1,923                | [ParlSpeech V2](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/L4OAKN) (Rauh/Schwalbach 2020)      | -->
-<!-- | Canada (House of Commons)            | all 43<br /> (1867-2019)    | 4,515                |                    | -->
-<!-- | Czech Republic (Poslanecka Snemovna) | all 8<br /> (1992-2017)     | 1,020                | [ParlSpeech V1](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/E4RSP9) (Rauh et al. 2017)          | -->
-<!-- | France (Assemblée)                   | all 15<br /> (1958-2017)    | 3,933                |                    | -->
-<!-- | ***Germany (Bundestag)***                  | ***all 19<br /> (1949-2017)***    | ***4,075***                | ***[BTVote data](https://dataverse.harvard.edu/dataverse/btvote) (Bergmann et al. 2018),<br /> [ParlSpeech V1](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/E4RSP9) (Rauh et al. 2017),<br /> [Reelection Prospects data](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/EBEDPI) (Stoffel/Sieberer 2017)***   | -->
-<!-- | Ireland (Dail)                       | all 33<br /> (1918-2020)          | 1,408                |	[Database of Parliamentary Speeches in Ireland](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/6MZN76) (Herzog/Mikhaylov 2017)	| -->
-<!-- | Scotland (Parliament)                | all 5<br /> (1999-2016)           | 305                  | [ParlScot](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/EQ9WBE) (Braby/Fraser 2021)      			 | -->
-<!-- | Spain (Congreso de los Diputados)    | all 14<br /> (1979-2019)          | 2634           | [ParlSpeech V2](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/L4OAKN) (Rauh/Schwalbach 2020)      |         -->
-<!-- | United Kingdom (House of Commons)    | all 58<br /> (1801-2019)          | 13,215               | [EggersSpirling data](https://github.com/ArthurSpirling/EggersSpirlingDatabase) (starting from <br /> 38th session, Eggers/Spirling 2014),<br /> [ParlSpeech V1](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/E4RSP9) (Rauh et al. 2017) |  -->
-<!-- | United States (House and Senate)     | all 116<br /> (1789-2019)         | 12,512               | [Voteview data](https://voteview.com/data) (Lewis et al. 2019), <br /> [Congressional Bills Project data](http://www.congressionalbills.org/) (Adler/Wilkserson 2018) | -->
-
 ## Constraints
 
 The scope of this version (Final Data Science Project) includes some constraints. From the ten country sample, only legislators from Germany are used that are chronologically at least part of the 15th legislative period. The current state of `legislatoR` does not include the most recent legislative period of the *Bundestag* (20), hence, MPs from legislative period 15 to 19 are part of `legislatoR+'s` sample.
 
-The *cut-down* version of `legislatoR+` (in relation to the full dataset) is mainly due to two reasons: First, the scope of this project is to introduce *The Comparative Legislators Database* in a visual and approachable manner. A small subset of the database is a better fit for this goal since the chances of potential overstrainings are reduced while performance and accessibility are increased. Second, one of the core visual elements is a `leaflet` map, which is serving as a constituency-based choropleth map, was rather complex to set up. Providing a stable and dynamically adjusted choropleth map based on the given untidy and unmerged datasets -- including the changing geographical and political boundaries of German constituencies -- was already a work-heavy and detailed task.
+The *cut-down* version of `legislatoR+` (in relation to the full dataset) is mainly due to two reasons: First, the scope of this project is to introduce *The Comparative Legislators Database* in a visual and approachable manner. A small subset of the database is a better fit for this goal since the chances of potential overstrainings are reduced while performance and accessibility are increased. Second, one of the core visual elements is a `leaflet` map, which is serving as a constituency-based choropleth map, was rather complex to set up. Since providing a stable and dynamically adjusted choropleth map based on the given untidy and unmerged datasets -- including the changing geographical and political boundaries of German constituencies -- was already a work-heavy and detailed task, the project members decided to not include further countries for the scope of the project in the first step, also considering the emphasis of the lecturers to not work on too big or too complicated tasks.
 
 ```{r, echo=TRUE}
 deu_political <- get_political("deu")
@@ -202,13 +193,19 @@ paste0(
 
 ## Functionality
 
-- SHOW CORE ELEMENTS: MAP, AGE PLOT, TERM LENGTH PLOT
+The main graphical elements of the dashboard are two descriptive statistics and a constituency-level map of Germany. The two descriptive statistics show the distribution of MPs' age and (total) term of office in years respectively as **Figure 5** shows. Both plots are presenting the density while being accompanied by a boxplot beneath the plotted density curve. In addition the (exact value of the) median is highlighted, next to the number of observations. In this case, *Wolfgang Schäuble* is selected, who is older than the average MP of the 19th legislative session and is also exceptionally long in office, as both descriptive statistics indicate.
 
-- SHOW UI FEATUERS: SELECT INPUT AND REACTIVE UPDATED SELECT INPUT
+The reactive `Shiny` context enables a dynamic handling of the underlying data structure. Users can subset the data manually by using the input parameters *Select Legislative Sessions* and *Select Parties*. In addition, individual MPs can also be selected by the parameter *MP Name*. Selected MPs are highlighted in both descriptive plots with a vertical line that is showing the data point within the selected distribution. Below the respective plots, there are download buttons (*SAVE PLOT*) that enable users to download the current version of the respective plot as a `.png` file.
 
-- SHOW UI FEATURES: EXPORT OPTIONS
+<div style="text-align: right"> **Figure 5: Descriptive Statistics** </div>
+![](images/screenshot_descriptive_statistics.png)
 
-- SHOW HOW WEBSITE/DASHBOARD IS INTRODUCED IN A VERY APPROACHABLE WAY
+The input selection not only updates and generates descriptive statistics, but also maps the current selection on a constituency-level, as shown in **Figure 6**. The `leaflet` map is reactively updated to every available of the three input paramters. When more than one legislative sesion is selected, the results of the most recent session are displayed. Selecting parties leads to highlighting all constituencies that were won in the respective federal election. When a party and an MP are selected, both are visually marked, while the constituency is highlighted with less opacity in order to accentuate them visually.
+
+Clicking on a single constituency opens a pop-up feature that gives a brief overview in the form of a small fact sheet of the political career of the respective MP. Next to the image of the individual MPs and the logo of the affiliated party, information on served sessions, age and the name of the constituency are presented.
+
+<div style="text-align: right"> **Figure 6: Constituency Map with Selected MP** </div>
+![](images/screenshot_map.png)
 
 ---
 
@@ -224,21 +221,25 @@ A useful and accessible dashboard should increase the vision of its underlying d
 
 The principle of *modularity* is directly implied theoretically and especially practically in the notion of scalability. In practical terms, modularity refers to a system that enables new features to be added in a very straightforward and inherent manner. For `legislatoR+` this would translate to adding visual and analytical elements of the `legislatoR` package that are easy to implement in the given dashboard structure. The current dashboard is mainly set up by 3 visual elements: A comprehensive choropleth map and two plots that communicate descriptive statistics. Adding a new map would be rather complicated and implying a lot of obstacles, while modularly adding new elements, for instance new information for the MPs and more legislative periods, would be a rather straightforward approach. The two existing plots could also be easily expanded or complemented by similar visual features that are based on the same level of inputs in `Shiny's` reactivity context.
 
+---
+
 # Obstacles and Problems
 
-- ADD IMAGES OF CHANGING CONSTITUENCIES
+Configuring a stable and consistent constituency-level map was one of the main obstacles of the project. First, there were many changes in the set up of political constituencies in the last decades that involved a manual merging approach of the respective geographical data files. Second, some constituencies were named differently across the different data sets that had to be merged. For instance, in one data file, there were spaces inserted, preceding and following a minus symbol in a double name, where the other data set did not used spaces. 
 
-- ADD IMAGES / SHOW SCREENSHOTS OF MERGE PROBLEMS DUE TO DIFFERENT CONSTITUENCY NAMES (MISTAKES)
+The shapefiles acquired from the *Bundeswahlleiter* for the 2009 and 2013 federal elections revealed differences in the data structure, such as missing values, duplicated rows, additional columns and other inconsistencies, which provided some difficulties for data manipulation and merging purposes within the project.
 
 ---
 
 # Outlook and Conclusion
 
+The previous chapters have shown that `legislatoR+` exhibits various possibilities to be extended in the future. While the dashboard already offers to retrieve information from a subset -- German MPs from the 15th to the 19th legislative period -- in a visual and descriptive manner, the possibilities to scale the existing application are certainly given. Adding more countries of `legislatoR` to the dashboard would increase the project's visibility, while prospective added modules could also be used to apply statistical models within the data structure and thus enhance the dashboard's scope to an analytical framework.
+
 ---
 
 # Appendix
 
-## Preliminary Idea
+## Preliminary Idea Sketch
 
 ![](images/whiteboard_15-10-2021.jpg)
 
@@ -246,6 +247,7 @@ The principle of *modularity* is directly implied theoretically and especially p
 
 # References
 
+Göbel, S., & Munzert, S. (2020). Introducing `legislatoR`.
+
 Göbel, S., & Munzert, S. (2021). The Comparative Legislators Database. British Journal of Political Science, 1-11. doi:10.1017/S0007123420000897
 
-<!-- Name (Date). Title [Type]. doi:10.5281/zenodo.XXXX -->

@@ -23,6 +23,7 @@ theme_lgl <- function() {
       plot.subtitle = element_text(          
         family = font,            
         size = 16,
+        color = "gray40",
         margin = margin(0, 0, 5, 0)),               
       
       plot.caption = element_text(
@@ -32,7 +33,8 @@ theme_lgl <- function() {
         margin = margin(5, 0, 0, 0)),
       
       axis.title = element_text(            
-        family = font,            
+        family = font,
+        color = "gray40",
         size = 14),               
       
       axis.text.x = element_text(   
