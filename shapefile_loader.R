@@ -1,4 +1,4 @@
-# Import shapefiles for Wahlkreise per session
+# Import shapefiles for Wahlkreise per session ----------------------------
 
 # btw21
 btw21_wahlkreise_spdf <-
@@ -70,30 +70,25 @@ btw02_wahlkreise_spdf@data <- btw02_wahlkreise_spdf@data %>%
   mutate(session = 15, WKR_NR = as.integer(WKR_NR))
 
 
-
-
-# 
-# 
-# 
-#Plot on leaflet map
-leaflet() %>%
-  addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
-  addPolygons(
-    data = btw09_wahlkreise_spdf,
-    stroke = TRUE,
-    weight = 1,
-    color = "#968C83",
-    fillColor = '#968C83',
-    fillOpacity = 0.5,
-    smoothFactor = 0.5,
-    popup = paste0(btw09_wahlkreise_spdf@data$name, btw09_wahlkreise_spdf@data$WKR_NAME.x),
-    highlightOptions = highlightOptions(
-      color = '#636363',
-      fillColor = '#636363',
-      opacity = 1,
-      weight = 2,
-      fillOpacity = 0.5,
-      bringToFront = TRUE,
-      sendToBack = TRUE
-    )
-  )
+# test leaflet map
+# leaflet() %>%
+#   addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
+#   addPolygons(
+#     data = btw09_wahlkreise_spdf,
+#     stroke = TRUE,
+#     weight = 1,
+#     color = "#968C83",
+#     fillColor = '#968C83',
+#     fillOpacity = 0.5,
+#     smoothFactor = 0.5,
+#     popup = paste0(btw09_wahlkreise_spdf@data$name, btw09_wahlkreise_spdf@data$WKR_NAME.x),
+#     highlightOptions = highlightOptions(
+#       color = '#636363',
+#       fillColor = '#636363',
+#       opacity = 1,
+#       weight = 2,
+#       fillOpacity = 0.5,
+#       bringToFront = TRUE,
+#       sendToBack = TRUE
+#     )
+#   )
