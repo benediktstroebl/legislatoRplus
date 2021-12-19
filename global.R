@@ -15,7 +15,6 @@ library(janitor)
 library(ggthemes)
 library(ggdist)
 library(partycoloR)
-library(leaflegend)
 
 # Constants used throughout code  ----------------------------------------
 

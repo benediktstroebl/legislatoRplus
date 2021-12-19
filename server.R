@@ -517,65 +517,6 @@ server <- function(input, output, session) {
     
   })
 
-  # Radar plot --------------------------------------------------------------
-  # Data frame for radar plot -- MP
-  # radar_plot_df <- reactive({
-  #   
-  #   deu_metrics %>% 
-  #     filter(name %in% input$name_input)
-  #   
-  # })
-  
-  # Data frame for radar plot -- comparison group
-  
-  # output$debug_radar_plot_df <- renderPrint(
-  #   radar_plot_df()
-  # )
-  
-  # radar_plot <- reactive({
-  #   
-  #   radar_plot_df() %>% 
-  #     ggplot(
-  #       aes(
-  #         x = var,
-  #         y = value,
-  #         group = name,
-  #         color = name,
-  #         fill = name
-  #       )
-  #     ) + 
-  #     geom_point(show.legend = FALSE) +
-  #     geom_polygon(alpha = 0.5) +
-  #     coord_radar() +
-  #     labs(x = "", y = "") +
-  #     theme_lgl() +
-  #     theme(
-  #       axis.text.y = element_blank(),
-  #       axis.ticks.y = element_blank(),
-  #       legend.position = "top",
-  #       plot.title = element_text(hjust = 0.5)
-  #     )
-  #   
-  # })
-    
-    # output$radar_plot_final <- renderPlot({
-    # 
-    #   validate(
-    #     need(
-    #       (input$name_input != ""),
-    #       "\n\n\n\nPlease select an MP"
-    #     )
-    #   )
-    # 
-    #   radar_plot()
-    #   
-    # })
-  
-
-  
-
-  
-
   # Map ---------------------------------------------------------------------
   
   # Select right SpatialPolygon data for leaflet based on leg. session
