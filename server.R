@@ -663,7 +663,7 @@ server <- function(input, output, session) {
   
   output$map <- renderLeaflet({
   
-    # Plot leaflet map (This IF statement has currently no effect)
+    # Plot leaflet map (This IF statement has currently no effect and does two times the same thing)
     if (length(input$session_input) > 1) {
       # If more than one session is selected
       leaflet() %>%
