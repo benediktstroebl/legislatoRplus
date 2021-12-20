@@ -521,6 +521,7 @@ server <- function(input, output, session) {
   
   # Select right SpatialPolygon data for leaflet based on leg. session
   wahlkreis_ll <- reactive({
+    # Named list with all six spdf dataframes per sessions
     btw_spdf <- list(
       "20" = btw21_wahlkreise_spdf,
       "19" = btw17_wahlkreise_spdf,
@@ -533,17 +534,19 @@ server <- function(input, output, session) {
 
     # Select the right SpatialPolygon data for the selected session
     if (length(input$session_input) > 0){
+      # If one or more sessions are selected, pick the spdf of the latest of these
       selected_spdf <- btw_spdf[[max(input$session_input)]]
 
     } else {
+      # If no session is selected, pick the latest session available
       selected_spdf <- btw_spdf[[as.character(max(session_list))]]
     }
     
 
       
-      # Assign color scheme depending on selectors
+      # Assign color scheme and fill_opacity depending on selectors
       if (input$name_input != "" & length(input$party_input) == 0){
-        print("1")
+        # If only MP name but no party is selected
         selected_spdf@data <- selected_spdf@data %>%
           mutate(
             party_color = case_when(name == input$name_input ~
@@ -554,8 +557,6 @@ server <- function(input, output, session) {
                                      TRUE ~ 0.4))
       } else if (length(input$party_input) > 0 & input$name_input == "") {
         # If party, but no MP is selected, highlight party constituencies
-        print("2")
-        
         selected_spdf@data <- selected_spdf@data %>%
           mutate(
             party_color = case_when(party %in% input$party_input ~
@@ -565,8 +566,7 @@ server <- function(input, output, session) {
                                        0.7,
                                      TRUE ~ 0.4))
       } else if (length(input$party_input) > 0 & input$name_input != "") {
-        print("3")
-        
+        # If both, party and MP name are selected
         selected_spdf@data <- selected_spdf@data %>%
           mutate(
             party_color = case_when(party %in% input$party_input ~
@@ -579,6 +579,7 @@ server <- function(input, output, session) {
                                      TRUE ~ 0.3)
           )
       } else {
+        # If neither MP name nor party is selected
         selected_spdf@data <- selected_spdf@data %>%
           mutate(
             fill_opacity = 0.5)
@@ -620,6 +621,7 @@ server <- function(input, output, session) {
     
   })
   
+  # Define highlight formatting for polygons on hover
   highlight_options <- highlightOptions(
     color = '#636363',
     fillColor = '#636363',
@@ -660,35 +662,10 @@ server <- function(input, output, session) {
   
   
   output$map <- renderLeaflet({
-      
-
-  # Plot on leaflet map
-  if (length(input$session_input) > 1) {
-    
-    leaflet() %>%
-      addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
-      addPolygons(
-        data = wahlkreis_ll(),
-        group = "2002 Election",
-        stroke = TRUE,
-        weight = ~ border_weight,
-        color = ~ party_color,
-        fillColor = ~ party_color,
-        fillOpacity = ~ fill_opacity,
-        smoothFactor = 0.5,
-        layerId = ~ name,
-        popup = ~ popup_image,
-        highlightOptions = highlight_options
-      ) %>%
-      addLegend(
-        data = wahlkreis_ll(),
-        title = "",
-        position = "bottomleft",
-        pal = color_pal(),
-        values = ~ party,
-        opacity = 1
-      ) 
-    } else {
+  
+    # Plot leaflet map (This IF statement has currently no effect)
+    if (length(input$session_input) > 1) {
+      # If more than one session is selected
       leaflet() %>%
         addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
         addPolygons(
@@ -704,6 +681,7 @@ server <- function(input, output, session) {
           highlightOptions = highlight_options
         ) %>%
         addLegend(
+          #Filter none and NA values out of legend
           data = wahlkreis_ll()[wahlkreis_ll()@data$party != "none" & !is.na(wahlkreis_ll()@data$party),],
           title = "",
           position = "bottomleft",
@@ -711,7 +689,31 @@ server <- function(input, output, session) {
           values = ~ party,
           opacity = 1
         )
-    }
+      } else {
+        # If one or no session is selected
+        leaflet() %>%
+          addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.99)) %>%
+          addPolygons(
+            data = wahlkreis_ll(),
+            stroke = TRUE,
+            weight = ~ border_weight,
+            color = ~ party_color,
+            fillColor = ~ party_color,
+            fillOpacity = ~ fill_opacity,
+            smoothFactor = 0.5,
+            layerId = ~ name,
+            popup = ~ popup_image,
+            highlightOptions = highlight_options
+          ) %>%
+          addLegend(
+            data = wahlkreis_ll()[wahlkreis_ll()@data$party != "none" & !is.na(wahlkreis_ll()@data$party),],
+            title = "",
+            position = "bottomleft",
+            pal = color_pal(),
+            values = ~ party,
+            opacity = 1
+          )
+      }
       
   })
   
