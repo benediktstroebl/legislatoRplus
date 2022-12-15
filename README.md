@@ -1,6 +1,6 @@
 # Final Data Science Project: `legislatoR+` <img src="https://raw.githubusercontent.com/saschagobel/legislatoR/master/images/sticker.jpg" width="120" align="right" />
 
-## Link to [`Shiny App`](https://687qak-gamesluxx.shinyapps.io/legislatoRplus/)
+## Link to [`Shiny App`](https://benediktstroebl.shinyapps.io/legislatoRplus/)
 
 ## Link to [Project Report](https://raw.githack.com/intro-to-data-science-21/data-project-legislatoRplus/main/project_report/project_report.html?token=ALMDJMZ7M5IJ46OQBKQANLDBX6MMG)
 
