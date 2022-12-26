@@ -1,0 +1,39 @@
+/* Whole document: */
+body{
+  font-family: Corbel;
+  font-size: 12pt;
+}
+
+/* Headers */
+h1{
+  font-size: 28pt;
+}
+h2{
+  font-size: 20pt;
+}
+h3{
+  font-size: 16pt;
+}
+
+/*
+#header {
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Hertie_School_of_Governance_logo.svg/512px-Hertie_School_of_Governance_logo.svg.png");
+  background-repeat: no-repeat;
+  background-position: 95%;
+  padding: 5px;
+}
+#header > * {
+  max-width: calc(100% - 225px);
+}
+@media only screen and (max-width:600px){
+#header > .title { 
+  margin-top: 105px;
+}
+#header > *
+  max-width: 100%;
+}
+#header {
+  background-position: 10px 10px;
+}
+}
+*/
